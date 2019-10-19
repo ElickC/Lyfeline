@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">LyfeLine</string>
+    <string name="lyfeline">LyfeLine</string>
+    <string name="create_account">Create Account</string>
+    <string name="enter_email">Enter Email</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="login">Login</string>
+</resources>

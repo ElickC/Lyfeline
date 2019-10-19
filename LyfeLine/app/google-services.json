@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "495769271227",
+    "firebase_url": "https://lyfeline-b61dd.firebaseio.com",
+    "project_id": "lyfeline-b61dd",
+    "storage_bucket": "lyfeline-b61dd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:495769271227:android:e858f501aceb2dcb64229e",
+        "android_client_info": {
+          "package_name": "com.example.lyfeline"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "495769271227-q2b15ep972e3j8lp44o8an3u4c5vp4r6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.lyfeline",
+            "certificate_hash": "a0a61f600d0242fee2014aad0a6765da049d3d94"
+          }
+        },
+        {
+          "client_id": "495769271227-95ps0lb87jca09g48ih7ajehpgernato.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmqx_v77BTVBbkWLtyQwZM2PIy2Dxr6PI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "495769271227-95ps0lb87jca09g48ih7ajehpgernato.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
