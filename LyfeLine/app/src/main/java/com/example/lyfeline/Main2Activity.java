@@ -16,6 +16,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class Main2Activity extends AppCompatActivity {
     EditText victimEmail, victimPass, victimFirstName, victimLastName, victimAddress, victimCity,
@@ -24,6 +26,10 @@ public class Main2Activity extends AppCompatActivity {
     Button buttonVictimRegister, buttonEmtRegister, buttonEmt, buttonVictim;
     private FirebaseAuth mAuth;
     final String EMT_CODE = "123";
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference dbRef;
+    final String VICTIM_PATH = "Victims/";
+    final String EMT_PATH = "Emt/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +50,6 @@ public class Main2Activity extends AppCompatActivity {
         emtCode = (EditText) findViewById(R.id.editTextCodeEMT);
 
         mAuth = FirebaseAuth.getInstance();
-
 
     }
 
@@ -111,8 +116,10 @@ public class Main2Activity extends AppCompatActivity {
 
     public void createNewVictim(String userID, String firstName, String lastName, String address,
                                 String city, String state) {
-        VictimUser victim = new VictimUser(userID, firstName, lastName, address, city, state);
-        victim.writeToDatabase();
+        VictimUser victim = new VictimUser(firstName, lastName, address, city, state);
+        mDatabase = FirebaseDatabase.getInstance();
+        dbRef = mDatabase.getReference(VICTIM_PATH + userID);
+        dbRef.setValue(victim);
 
         Intent victimGui = new Intent(this, VictimGui.class);
         startActivity(victimGui);
@@ -156,8 +163,10 @@ public class Main2Activity extends AppCompatActivity {
         }
     }
     public void createNewEMT(String userID, String firstName, String lastName) {
-        EmtUser emt = new EmtUser(userID, firstName, lastName);
-        emt.writeToDatabase();
+        EmtUser emt = new EmtUser(firstName, lastName);
+        mDatabase = FirebaseDatabase.getInstance();
+        dbRef = mDatabase.getReference(EMT_PATH + userID);
+        dbRef.setValue(emt);
 
         Intent emtGui = new Intent(this, EmtGui.class);
         startActivity(emtGui);

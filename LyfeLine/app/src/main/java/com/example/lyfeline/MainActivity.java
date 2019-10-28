@@ -1,9 +1,11 @@
 package com.example.lyfeline;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,11 +17,23 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     Button buttonLogin, buttonCreateAcc;
     EditText emailId, passId;
+    private Boolean isVictim = false;
     private FirebaseAuth mAuth;
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference dbRef;
+    final String VICTIM_PATH = "Victims/";
+    final String EMT_PATH = "Emt/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                String userID = user.getUid();
+                                identifyUser();
 
                             } else {
                                 Toast.makeText(getApplicationContext(), "Please Try Again",
@@ -76,6 +89,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void registerUser() {
         Intent createAccount = new Intent(this, Main2Activity.class);
         startActivity(createAccount);
+    }
+
+    public void identifyUser() {
+        ValueEventListener changeListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                FirebaseUser user = mAuth.getCurrentUser();
+                String userID = user.getUid();
+                readData(dataSnapshot, userID);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        mDatabase = FirebaseDatabase.getInstance();
+        dbRef = mDatabase.getReference();
+        dbRef.addValueEventListener(changeListener);
+        if (isVictim) {
+            Intent victimGui = new Intent(this, VictimGui.class);
+            startActivity(victimGui);
+        }
+        else {
+            Intent emtGui = new Intent(this, EmtGui.class);
+            startActivity(emtGui);
+        }
+
+    }
+
+    public void readData(DataSnapshot ds, String userID) {
+        if (ds.hasChild(EMT_PATH  + userID)) {
+            EmtUser user = new EmtUser();
+            user.setFirstName(ds.child(EMT_PATH + userID).getValue(VictimUser.class).getFirstName());
+            user.setLastName(ds.child(EMT_PATH + userID).getValue(VictimUser.class).getLastName());
+            isVictim = false;
+        }
+        else if (ds.hasChild(VICTIM_PATH  + userID)) {
+            VictimUser user = new VictimUser();
+            user.setFirstName(ds.child(VICTIM_PATH + userID).getValue(VictimUser.class).getFirstName());
+            user.setLastName(ds.child(VICTIM_PATH + userID).getValue(VictimUser.class).getLastName());
+            user.setCity(ds.child(VICTIM_PATH + userID).getValue(VictimUser.class).getCity());
+            user.setState(ds.child(VICTIM_PATH + userID).getValue(VictimUser.class).getState());
+            user.setAddress(ds.child(VICTIM_PATH + userID).getValue(VictimUser.class).getAddress());
+            isVictim = true;
+        }
     }
 }
 

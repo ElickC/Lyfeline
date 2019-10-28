@@ -14,7 +14,7 @@
         android:layout_marginLeft="56dp"
         android:layout_marginTop="49dp"
         android:fontFamily="monospace"
-        android:text="First Name"
+        android:text="@string/first_name"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewCode" />
 
@@ -30,7 +30,8 @@
         android:inputType="textPersonName"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextFirstEMT" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextFirstEMT"
+        android:importantForAutofill="no" />
 
     <EditText
         android:id="@+id/editTextFirstEMT"
@@ -41,11 +42,12 @@
         android:layout_marginEnd="84dp"
         android:layout_marginRight="84dp"
         android:ems="10"
-        android:hint="Enter First Name"
+        android:hint="@string/enter_first_name"
         android:inputType="textPersonName"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextCodeEMT" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextCodeEMT"
+        android:importantForAutofill="no" />
 
     <TextView
         android:id="@+id/textViewLast2"
@@ -63,13 +65,14 @@
         android:id="@+id/imageView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="83dp"
-        android:layout_marginLeft="83dp"
+        android:layout_marginStart="80dp"
+        android:layout_marginLeft="80dp"
         android:layout_marginTop="36dp"
-        android:background="#D3B9A9"
+        android:background="#566475"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageButtonEmail2"
-        app:srcCompat="@android:drawable/ic_lock_lock" />
+        app:srcCompat="@android:drawable/ic_lock_lock"
+        android:contentDescription="@string/todo" />
 
     <ImageButton
         android:id="@+id/imageButtonEmail2"
@@ -78,10 +81,11 @@
         android:layout_marginStart="80dp"
         android:layout_marginLeft="80dp"
         android:layout_marginTop="76dp"
-        android:background="#D3B9A9"
+        android:background="#566475"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewCreateAccount"
-        app:srcCompat="@android:drawable/sym_action_email" />
+        app:srcCompat="@android:drawable/sym_action_email"
+        android:contentDescription="@string/todo" />
 
     <TextView
         android:id="@+id/textViewCreateAccount"
@@ -90,7 +94,7 @@
         android:layout_marginTop="25dp"
         android:fontFamily="monospace"
         android:text="@string/create_a_lyfeline_account"
-        android:textColor="#D61429"
+        android:textColor="#AC072b"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -105,7 +109,7 @@
         android:layout_marginLeft="65dp"
         android:layout_marginTop="57dp"
         android:fontFamily="monospace"
-        android:text="EMT Code"
+        android:text="@string/emt_code"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView3" />
 
@@ -117,11 +121,12 @@
         android:layout_marginEnd="85dp"
         android:layout_marginRight="85dp"
         android:ems="10"
-        android:hint="Enter EMT Code"
+        android:hint="@string/enter_emt_code"
         android:inputType="textPersonName"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextPasswordEMT" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextPasswordEMT"
+        android:importantForAutofill="no" />
 
     <EditText
         android:id="@+id/editTextEmailEMT"
@@ -139,7 +144,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/imageButtonEmail2"
-        app:layout_constraintTop_toBottomOf="@+id/textViewCreateAccount" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewCreateAccount"
+        android:importantForAutofill="no" />
 
     <EditText
         android:id="@+id/editTextPasswordEMT"
@@ -156,7 +162,8 @@
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView3"
-        app:layout_constraintTop_toBottomOf="@+id/editTextEmailEMT" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextEmailEMT"
+        android:importantForAutofill="no" />
 
     <Button
         android:id="@+id/buttonRegisterEMT"
