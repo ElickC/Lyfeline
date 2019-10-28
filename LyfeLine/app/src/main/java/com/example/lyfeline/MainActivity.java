@@ -16,7 +16,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     Button buttonLogin, buttonCreateAcc;
     EditText emailId, passId;
     private FirebaseAuth mAuth;
@@ -27,80 +27,55 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         buttonLogin = (Button) findViewById(R.id.buttonLogin);
         buttonCreateAcc = (Button) findViewById(R.id.buttonCreateAccount);
+
+        buttonLogin.setOnClickListener(this);
+        buttonCreateAcc.setOnClickListener(this);
+
         emailId = (EditText) findViewById(R.id.editTextEmail);
         passId = (EditText) findViewById(R.id.editTextLast);
+
         mAuth = FirebaseAuth.getInstance();
 
-        buttonLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if ( v == buttonLogin ) {
-                    loginUser();
-                }
-            }
-        });
-
-        buttonCreateAcc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if ( v == buttonCreateAcc ) {
-                    registerUser();
-                }
-            }
-        });
     }
 
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()) {
+            case R.id.buttonLogin:
+                loginUser();
+                break;
+            case R.id.buttonCreateAccount:
+                registerUser();
+                break;
+        }
+    }
     public void loginUser() {
         String email = emailId.getText().toString();
-        if ( email.matches("") ) {
-            Toast.makeText(this, "Email field is empty", Toast.LENGTH_LONG).show();
-        }
         String password = passId.getText().toString();
-        if ( password.matches("") ) {
-            Toast.makeText(this, "Password field is empty", Toast.LENGTH_LONG).show();
-        }
+        if ( !email.matches("") && !password.matches("") ) {
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                String userID = user.getUid();
 
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if ( task.isSuccessful() ) {
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    Toast.makeText(getApplicationContext(), "login successful", Toast.LENGTH_LONG).show();
-                }
-                else {
-                    Toast.makeText(getApplicationContext(), "Couldn't login", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Please Try Again",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+        }
+        else {
+            Toast.makeText(this, "Please Complete All Fields", Toast.LENGTH_LONG).show();
+        }
     }
 
     public void registerUser() {
-
-        Intent registerAccount = new Intent(this, Main2Activity.class);
-        startActivity(registerAccount);
-
-        String email = emailId.getText().toString();
-        if ( email.matches("") ) {
-            Toast.makeText(this, "Email field is empty", Toast.LENGTH_LONG).show();
-        }
-        String password = passId.getText().toString();
-        if ( password.matches("") ) {
-            Toast.makeText(this, "Password field is empty", Toast.LENGTH_LONG).show();
-        }
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if ( task.isSuccessful() ) {
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    Toast.makeText(getApplicationContext(), "account registry complete", Toast.LENGTH_LONG).show();
-                }
-                else {
-                    Toast.makeText(getApplicationContext(), "Couldn't create account", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+        Intent createAccount = new Intent(this, Main2Activity.class);
+        startActivity(createAccount);
     }
 }
 

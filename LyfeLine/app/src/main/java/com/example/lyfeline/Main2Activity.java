@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,56 +18,149 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class Main2Activity extends AppCompatActivity {
-    EditText emailId, passId, firstName, lastName;
-    Button registerAccount;
+    EditText victimEmail, victimPass, victimFirstName, victimLastName, victimAddress, victimCity,
+            victimState;
+    EditText emtEmail, emtPass, emtFirstName, emtLastName, emtCode;
+    Button buttonVictimRegister, buttonEmtRegister, buttonEmt, buttonVictim;
     private FirebaseAuth mAuth;
+    final String EMT_CODE = "123";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
-        emailId = (EditText) findViewById(R.id.editTextEmail);
-        passId = (EditText) findViewById(R.id.editTextPass);
-        firstName = (EditText) findViewById(R.id.editTextFirst);
-        lastName = (EditText) findViewById(R.id.editTextLast);
-        registerAccount = (Button) findViewById(R.id.buttonRegister);
+        setContentView(R.layout.emt_or_victim);
+
+        //Buttons
+        buttonEmt = (Button) findViewById(R.id.buttonEMT);
+        buttonVictim = (Button) findViewById(R.id.buttonVictim);
+        buttonVictimRegister = (Button) findViewById(R.id.buttonRegisterVictim);
+        buttonEmtRegister = (Button) findViewById(R.id.buttonRegisterEMT);
+
+        //EditTexts EMT
+        emtEmail = (EditText) findViewById(R.id.editTextEmailEMT);
+        emtPass = (EditText) findViewById(R.id.editTextPasswordEMT);
+        emtFirstName = (EditText) findViewById(R.id.editTextFirstEMT);
+        emtLastName = (EditText) findViewById(R.id.editTextLastEMT);
+        emtCode = (EditText) findViewById(R.id.editTextCodeEMT);
+
         mAuth = FirebaseAuth.getInstance();
 
-        registerAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (v == registerAccount) {
-                    registerUser();
-                }
-            }
-        });
+
     }
-    public void registerUser() {
-        String email = emailId.getText().toString();
-        String password = passId.getText().toString();
-        String firstN = firstName.getText().toString();
-        String lastN = lastName.getText().toString();
 
-        if ( email.matches("") ) {
-            Toast.makeText(this, "Email field is empty", Toast.LENGTH_LONG).show();
+
+    public void onClickResolve(View v) {
+        switch (v.getId()) {
+            case R.id.buttonEMT:
+                setContentView(R.layout.emt_create_account);
+                break;
+            case R.id.buttonVictim:
+                setContentView(R.layout.victim_create_account);
+                break;
+            case R.id.buttonRegisterVictim:
+                registerVictim();
+                break;
+            case R.id.buttonRegisterEMT:
+                registerEMT();
+                Toast.makeText(this, "reg emt button clicked", Toast.LENGTH_LONG).show();
+                break;
+        }
+    }
+
+    public void registerVictim() {
+        victimEmail = (EditText) findViewById(R.id.editTextEmail);
+        victimPass = (EditText) findViewById(R.id.editTextPassword);
+        victimFirstName = (EditText) findViewById(R.id.editTextFirst);
+        victimLastName = (EditText) findViewById(R.id.editTextLast);
+        victimAddress = (EditText) findViewById(R.id.editTextAddress);
+        victimCity = (EditText) findViewById(R.id.editTextCity);
+        victimState = (EditText) findViewById(R.id.editTextState);
+
+        String email = victimEmail.getText().toString();
+        String password = victimPass.getText().toString();
+        final String firstN = victimFirstName.getText().toString();
+        final String lastN = victimLastName.getText().toString();
+        final String address = victimAddress.getText().toString();
+        final String city = victimCity.getText().toString();
+        final String state = victimState.getText().toString();
+
+        if (!email.matches("") && !password.matches("") && !firstN.matches("") &&
+                !lastN.matches("") && !address.matches("") && !city.matches("")
+                && !state.matches("")) {
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                String userID = user.getUid();
+                                createNewVictim(userID, firstN, lastN, address, city, state);
+                                Toast.makeText(getApplicationContext(), "successful registry", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Couldn't Create Account, "
+                                        + "Please Try Again", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+
+        } else {
+            Toast.makeText(this, "Please Complete All Fields", Toast.LENGTH_LONG).show();
         }
 
-        if ( password.matches("") ) {
-            Toast.makeText(this, "Password field is empty", Toast.LENGTH_LONG).show();
+    }
+
+    public void createNewVictim(String userID, String firstName, String lastName, String address,
+                                String city, String state) {
+        VictimUser victim = new VictimUser(userID, firstName, lastName, address, city, state);
+        victim.writeToDatabase();
+
+        Intent victimGui = new Intent(this, VictimGui.class);
+        startActivity(victimGui);
+
+    }
+
+    public void registerEMT() {
+        emtEmail = (EditText) findViewById(R.id.editTextEmailEMT);
+        emtPass = (EditText) findViewById(R.id.editTextPasswordEMT);
+        emtFirstName = (EditText) findViewById(R.id.editTextFirstEMT);
+        emtLastName = (EditText) findViewById(R.id.editTextLastEMT);
+        emtCode = (EditText) findViewById(R.id.editTextCodeEMT);
+
+        String email = emtEmail.getText().toString();
+        String password = emtPass.getText().toString();
+        final String firstN = emtFirstName.getText().toString();
+        final String lastN = emtLastName.getText().toString();
+        final String code = emtCode.getText().toString();
+
+
+        if (!email.matches("") && !password.matches("") && !firstN.matches("") &&
+                !lastN.matches("") && code.matches(EMT_CODE)) {
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                String userID = user.getUid();
+                                createNewEMT(userID, firstN, lastN);
+                                Toast.makeText(getApplicationContext(), "successful registry", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Couldn't Create Account, "
+                                        + "Please Try Again", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+
+        } else {
+            Toast.makeText(this, "Please Complete All Fields", Toast.LENGTH_LONG).show();
         }
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if ( task.isSuccessful() ) {
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            Toast.makeText(getApplicationContext(), "account registry complete", Toast.LENGTH_LONG).show();
-                        }
-                        else {
-                            Toast.makeText(getApplicationContext(), "Couldn't create account", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
+    }
+    public void createNewEMT(String userID, String firstName, String lastName) {
+        EmtUser emt = new EmtUser(userID, firstName, lastName);
+        emt.writeToDatabase();
+
+        Intent emtGui = new Intent(this, EmtGui.class);
+        startActivity(emtGui);
 
     }
 }
