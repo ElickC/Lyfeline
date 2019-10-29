@@ -16,6 +16,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
@@ -25,6 +28,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+
+// Activity for home page. Handles user Login and directs Create Account to Main2Activity
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     Button buttonLogin, buttonCreateAcc;
     EditText emailId, passId;
@@ -51,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mAuth = FirebaseAuth.getInstance();
 
     }
-
+    // Overriding onClick to handle buttons clicked
     @Override
     public void onClick(View v) {
         switch(v.getId()) {
@@ -63,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
     }
+
+    //User login process
     public void loginUser() {
         String email = emailId.getText().toString();
         String password = passId.getText().toString();
@@ -73,41 +80,57 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 identifyUser();
-
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Please Try Again",
-                                        Toast.LENGTH_LONG).show();
+                            }
+                            else {
+                                try {
+                                    throw task.getException();
+                                }
+                                catch (FirebaseAuthInvalidCredentialsException e) {
+                                    showToast("Invalid Password");
+                                }
+                                catch (FirebaseAuthInvalidUserException e) {
+                                    showToast("Invalid Email");
+                                }
+                                catch(Exception e) {
+                                    showToast("Please Try Again");
+                                }
                             }
                         }
                     });
         }
         else {
-            Toast.makeText(this, "Please Complete All Fields", Toast.LENGTH_LONG).show();
+            showToast("Fill in All Fields");
         }
     }
 
+    // If creating an account go to Main2Activity
     public void registerUser() {
         Intent createAccount = new Intent(this, Main2Activity.class);
         startActivity(createAccount);
     }
 
+    // After login, identify whether user is victim or EMT and act accordingly
     public void identifyUser() {
+        //ValueEventListener triggered every time data in database changes
         ValueEventListener changeListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 FirebaseUser user = mAuth.getCurrentUser();
                 String userID = user.getUid();
+                //Update user class with modified data
                 readData(dataSnapshot, userID);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         };
+
         mDatabase = FirebaseDatabase.getInstance();
         dbRef = mDatabase.getReference();
         dbRef.addValueEventListener(changeListener);
+
+        // Start GUI activity depending on who user is
         if (isVictim) {
             Intent victimGui = new Intent(this, VictimGui.class);
             startActivity(victimGui);
@@ -118,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     }
-
+    // Reads data into user class
     public void readData(DataSnapshot ds, String userID) {
         if (ds.hasChild(EMT_PATH  + userID)) {
             EmtUser user = new EmtUser();
@@ -135,6 +158,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             user.setAddress(ds.child(VICTIM_PATH + userID).getValue(VictimUser.class).getAddress());
             isVictim = true;
         }
+    }
+
+    public void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 }
 

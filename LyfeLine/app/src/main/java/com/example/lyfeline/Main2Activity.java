@@ -15,10 +15,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+// Activity for creating an account
 public class Main2Activity extends AppCompatActivity {
     EditText victimEmail, victimPass, victimFirstName, victimLastName, victimAddress, victimCity,
             victimState;
@@ -53,7 +58,7 @@ public class Main2Activity extends AppCompatActivity {
 
     }
 
-
+    // Function to identify which button was clicked
     public void onClickResolve(View v) {
         switch (v.getId()) {
             case R.id.buttonEMT:
@@ -67,11 +72,11 @@ public class Main2Activity extends AppCompatActivity {
                 break;
             case R.id.buttonRegisterEMT:
                 registerEMT();
-                Toast.makeText(this, "reg emt button clicked", Toast.LENGTH_LONG).show();
                 break;
         }
     }
 
+    // Handles victim registration
     public void registerVictim() {
         victimEmail = (EditText) findViewById(R.id.editTextEmail);
         victimPass = (EditText) findViewById(R.id.editTextPassword);
@@ -100,20 +105,33 @@ public class Main2Activity extends AppCompatActivity {
                                 FirebaseUser user = mAuth.getCurrentUser();
                                 String userID = user.getUid();
                                 createNewVictim(userID, firstN, lastN, address, city, state);
-                                Toast.makeText(getApplicationContext(), "successful registry", Toast.LENGTH_LONG).show();
                             } else {
-                                Toast.makeText(getApplicationContext(), "Couldn't Create Account, "
-                                        + "Please Try Again", Toast.LENGTH_LONG).show();
+                                try {
+                                    throw task.getException();
+                                }
+                                catch (FirebaseAuthWeakPasswordException e) {
+                                    showToast("Password is Weak");
+                                }
+                                catch (FirebaseAuthInvalidCredentialsException e) {
+                                    showToast("Email Does Not Exist");
+                                }
+                                catch (FirebaseAuthUserCollisionException e) {
+                                    showToast("Email Already Registered");
+                                }
+                                catch(Exception e) {
+                                    showToast("Please Try Again");
+                                }
                             }
                         }
                     });
 
         } else {
-            Toast.makeText(this, "Please Complete All Fields", Toast.LENGTH_LONG).show();
+            showToast("Please Complete All Fields");
         }
 
     }
 
+    // Creates new VictimUser class, writes user data to database and starts victimGUI
     public void createNewVictim(String userID, String firstName, String lastName, String address,
                                 String city, String state) {
         VictimUser victim = new VictimUser(firstName, lastName, address, city, state);
@@ -123,9 +141,9 @@ public class Main2Activity extends AppCompatActivity {
 
         Intent victimGui = new Intent(this, VictimGui.class);
         startActivity(victimGui);
-
     }
 
+    // Handles emt registration
     public void registerEMT() {
         emtEmail = (EditText) findViewById(R.id.editTextEmailEMT);
         emtPass = (EditText) findViewById(R.id.editTextPasswordEMT);
@@ -150,18 +168,32 @@ public class Main2Activity extends AppCompatActivity {
                                 FirebaseUser user = mAuth.getCurrentUser();
                                 String userID = user.getUid();
                                 createNewEMT(userID, firstN, lastN);
-                                Toast.makeText(getApplicationContext(), "successful registry", Toast.LENGTH_LONG).show();
                             } else {
-                                Toast.makeText(getApplicationContext(), "Couldn't Create Account, "
-                                        + "Please Try Again", Toast.LENGTH_LONG).show();
+                                try {
+                                    throw task.getException();
+                                }
+                                catch (FirebaseAuthWeakPasswordException e) {
+                                    showToast("Password is Weak");
+                                }
+                                catch (FirebaseAuthInvalidCredentialsException e) {
+                                    showToast("Email Does Not Exist");
+                                }
+                                catch (FirebaseAuthUserCollisionException e) {
+                                    showToast("Email Already Registered");
+                                }
+                                catch(Exception e) {
+                                    showToast("Please Try Again");
+                                }
                             }
                         }
                     });
 
         } else {
-            Toast.makeText(this, "Please Complete All Fields", Toast.LENGTH_LONG).show();
+            showToast("Please Fill in All Fields");
         }
     }
+
+    // Creates new EmtUser class, writes user data to database and starts EmtGUI
     public void createNewEMT(String userID, String firstName, String lastName) {
         EmtUser emt = new EmtUser(firstName, lastName);
         mDatabase = FirebaseDatabase.getInstance();
@@ -170,6 +202,10 @@ public class Main2Activity extends AppCompatActivity {
 
         Intent emtGui = new Intent(this, EmtGui.class);
         startActivity(emtGui);
-
     }
+
+    public void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
 }

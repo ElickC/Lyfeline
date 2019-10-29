@@ -34,10 +34,10 @@
         android:layout_marginLeft="76dp"
         android:layout_marginBottom="8dp"
         android:background="#566475"
+        android:contentDescription="TODO"
         app:layout_constraintBottom_toBottomOf="@+id/editTextEmail"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@android:drawable/sym_action_email"
-        android:contentDescription="TODO" />
+        app:srcCompat="@android:drawable/sym_action_email" />
 
     <EditText
         android:id="@+id/editTextEmail"
@@ -45,18 +45,18 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="52dp"
         android:layout_marginLeft="52dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="80dp"
-        android:layout_marginRight="80dp"
+        android:layout_marginTop="72dp"
+        android:layout_marginEnd="75dp"
+        android:layout_marginRight="75dp"
         android:ems="10"
         android:hint="@string/enter_email"
+        android:importantForAutofill="no"
         android:inputType="textPersonName"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.2"
         app:layout_constraintStart_toEndOf="@+id/imageButtonEmail"
-        app:layout_constraintTop_toBottomOf="@+id/textViewCreate"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewCreate" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -66,10 +66,10 @@
         android:layout_marginLeft="76dp"
         android:layout_marginTop="32dp"
         android:background="#566475"
+        android:contentDescription="@string/todo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageButtonEmail"
-        app:srcCompat="@android:drawable/ic_lock_lock"
-        android:contentDescription="@string/todo" />
+        app:srcCompat="@android:drawable/ic_lock_lock" />
 
     <EditText
         android:id="@+id/editTextPassword"
@@ -78,28 +78,29 @@
         android:layout_marginStart="36dp"
         android:layout_marginLeft="36dp"
         android:layout_marginTop="24dp"
-        android:layout_marginEnd="80dp"
-        android:layout_marginRight="80dp"
+        android:layout_marginEnd="75dp"
+        android:layout_marginRight="75dp"
         android:ems="10"
         android:hint="@string/enter_password"
+        android:importantForAutofill="no"
         android:inputType="textPassword"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.736"
         app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/editTextEmail"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextEmail" />
 
     <TextView
         android:id="@+id/textViewBasic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="64dp"
         android:fontFamily="monospace"
         android:text="@string/basic_information"
         android:textAllCaps="false"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.513"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
 
@@ -124,29 +125,29 @@
         style="@style/Widget.MaterialComponents.TextInputEditText.OutlinedBox.Dense"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="80dp"
-        android:layout_marginRight="80dp"
+        android:layout_marginEnd="75dp"
+        android:layout_marginRight="75dp"
         android:ems="10"
         android:hint="@string/enter_first_name"
+        android:importantForAutofill="no"
         android:inputType="textPersonName"
         android:textSize="14sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/textViewFirstName"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:importantForAutofill="no" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <EditText
         android:id="@+id/editTextLast"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="80dp"
-        android:layout_marginRight="80dp"
+        android:layout_marginEnd="75dp"
+        android:layout_marginRight="75dp"
         android:ems="10"
         android:hint="@string/enter_last_name"
+        android:importantForAutofill="no"
         android:inputType="textPersonName"
         android:textSize="14sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/textViewLast"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:importantForAutofill="no" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/textViewLast"
@@ -179,15 +180,15 @@
         android:id="@+id/editTextAddress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="80dp"
-        android:layout_marginRight="80dp"
+        android:layout_marginEnd="75dp"
+        android:layout_marginRight="75dp"
         android:ems="10"
         android:hint="@string/enter_address"
+        android:importantForAutofill="no"
         android:inputType="textPersonName"
         android:textSize="14sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/textViewAddress"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:importantForAutofill="no" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/textViewCity"
@@ -207,17 +208,17 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
         android:layout_marginLeft="36dp"
-        android:layout_marginEnd="80dp"
-        android:layout_marginRight="80dp"
+        android:layout_marginEnd="75dp"
+        android:layout_marginRight="75dp"
         android:ems="10"
         android:hint="@string/enter_city"
+        android:importantForAutofill="no"
         android:inputType="textPersonName"
         android:textSize="14sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/textViewCity"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/textViewCity"
-        android:importantForAutofill="no" />
+        app:layout_constraintStart_toEndOf="@+id/textViewCity" />
 
     <TextView
         android:id="@+id/textViewState"
@@ -238,16 +239,17 @@
         android:layout_marginStart="44dp"
         android:layout_marginLeft="44dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="80dp"
-        android:layout_marginRight="80dp"
+        android:layout_marginEnd="75dp"
+        android:layout_marginRight="75dp"
         android:ems="10"
         android:hint="@string/enter_state"
+        android:importantForAutofill="no"
         android:inputType="textPersonName"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/textViewState"
-        app:layout_constraintTop_toBottomOf="@+id/editTextCity"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextCity" />
 
     <Button
         android:id="@+id/buttonRegisterVictim"
