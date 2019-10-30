@@ -27,11 +27,11 @@
         android:layout_marginRight="84dp"
         android:ems="10"
         android:hint="@string/enter_last_name"
+        android:importantForAutofill="no"
         android:inputType="textPersonName"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextFirstEMT"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextFirstEMT" />
 
     <EditText
         android:id="@+id/editTextFirstEMT"
@@ -43,11 +43,11 @@
         android:layout_marginRight="84dp"
         android:ems="10"
         android:hint="@string/enter_first_name"
+        android:importantForAutofill="no"
         android:inputType="textPersonName"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextCodeEMT"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextCodeEMT" />
 
     <TextView
         android:id="@+id/textViewLast2"
@@ -105,9 +105,9 @@
         android:id="@+id/textViewCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="65dp"
-        android:layout_marginLeft="65dp"
-        android:layout_marginTop="57dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginLeft="64dp"
+        android:layout_marginTop="116dp"
         android:fontFamily="monospace"
         android:text="@string/emt_code"
         app:layout_constraintStart_toStartOf="parent"
@@ -117,16 +117,16 @@
         android:id="@+id/editTextCodeEMT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="47dp"
-        android:layout_marginEnd="85dp"
-        android:layout_marginRight="85dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="80dp"
+        android:layout_marginRight="80dp"
         android:ems="10"
         android:hint="@string/enter_emt_code"
+        android:importantForAutofill="no"
         android:inputType="textPersonName"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextPasswordEMT"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <EditText
         android:id="@+id/editTextEmailEMT"
@@ -139,13 +139,13 @@
         android:layout_marginRight="84dp"
         android:ems="10"
         android:hint="@string/enter_email"
+        android:importantForAutofill="no"
         android:inputType="textEmailAddress"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/imageButtonEmail2"
-        app:layout_constraintTop_toBottomOf="@+id/textViewCreateAccount"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewCreateAccount" />
 
     <EditText
         android:id="@+id/editTextPasswordEMT"
@@ -158,24 +158,35 @@
         android:layout_marginRight="83dp"
         android:ems="10"
         android:hint="@string/enter_password"
+        android:importantForAutofill="no"
         android:inputType="textPassword"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView3"
-        app:layout_constraintTop_toBottomOf="@+id/editTextEmailEMT"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextEmailEMT" />
 
     <Button
         android:id="@+id/buttonRegisterEMT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="31dp"
+        android:layout_marginTop="44dp"
         android:fontFamily="monospace"
         android:onClick="onClickResolve"
         android:text="@string/create_account"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextLastEMT" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="52dp"
+        android:fontFamily="monospace"
+        android:text="@string/basic_information"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextPasswordEMT" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
