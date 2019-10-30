@@ -29,4 +29,6 @@
     <string name="rescuee">Rescuee</string>
     <string name="emt">EMT</string>
     <string name="or">--------------------- OR ---------------------</string>
+    <string name="contentDescription">TODO</string>
+    <string name="google_maps_API_key">AIzaSyBmqx_v77BTVBbkWLtyQwZM2PIy2Dxr6PI</string>
 </resources>

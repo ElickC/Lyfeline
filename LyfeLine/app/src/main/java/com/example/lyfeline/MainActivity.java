@@ -4,14 +4,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -24,9 +28,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.android.gms.maps.GoogleMap;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
-    Button buttonLogin, buttonCreateAcc;
+
+    // creating log
+    private static final String TAG = "MainActivity";
+
+    // error if user doesn't have correct version of google services
+    private static final int ERROR_DIALOG_REQUEST = 9001;
+
+
+    Button buttonLogin, buttonCreateAcc, buttonMap;
     EditText emailId, passId;
     private Boolean isVictim = false;
     private FirebaseAuth mAuth;
@@ -39,17 +52,57 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        buttonLogin = (Button) findViewById(R.id.buttonLogin);
-        buttonCreateAcc = (Button) findViewById(R.id.buttonCreateAccount);
+
+        buttonMap = findViewById(R.id.buttonMap);
+
+        if (isServicesOK()) {
+            init();
+        }
+
+
+        buttonLogin = findViewById(R.id.buttonLogin);
+        buttonCreateAcc = findViewById(R.id.buttonCreateAccount);
 
         buttonLogin.setOnClickListener(this);
         buttonCreateAcc.setOnClickListener(this);
 
-        emailId = (EditText) findViewById(R.id.editTextEmail);
-        passId = (EditText) findViewById(R.id.editTextLast);
+        emailId = findViewById(R.id.editTextEmail);
+        passId = findViewById(R.id.editTextLast);
 
         mAuth = FirebaseAuth.getInstance();
 
+    }
+
+    private void init(){
+        buttonMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, MapActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    public boolean isServicesOK(){
+        Log.d(TAG, "isServicesOK: checking google services version");
+
+        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MainActivity.this);
+
+        if(available == ConnectionResult.SUCCESS){
+            // everything is okay and the user can make map requests
+            Log.d(TAG, "isServicesOK: Google Play Services is working");
+            return true;
+        }
+        else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
+            // an error occurred but we can resolve it
+            Log.d(TAG, "isServicesOK: an error occurred but we can fix it");
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
+            dialog.show();
+        }
+        else{
+            Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
+        }
+        return false;
     }
 
     @Override

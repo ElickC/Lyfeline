@@ -21,7 +21,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageButtonEmail3"
         app:srcCompat="@android:drawable/ic_lock_lock"
-        android:contentDescription="@string/todo" />
+        android:contentDescription="@+string/todo" />
 
     <ImageButton
         android:id="@+id/imageButtonEmail3"
@@ -113,5 +113,13 @@
         android:text="@string/login"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextLast" />
+
+    <Button
+        android:id="@+id/buttonMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Map"
+        tools:layout_editor_absoluteX="237dp"
+        tools:layout_editor_absoluteY="470dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
