@@ -21,14 +21,13 @@ public class EmtGui extends AppCompatActivity {
         toolbar.setTitle(getResources().getString(R.string.app_name));
 
         TabLayout tabLayout = findViewById(R.id.tabLayout);
-        TabItem tabHome = findViewById(R.id.tabHome);
-        TabItem tabMap = findViewById(R.id.tabMap);
+        //TabItem tabHome = findViewById(R.id.tabHome);
+        //TabItem tabMap = findViewById(R.id.tabMap);
 
         ViewPager viewPager = findViewById(R.id.viewPager);
 
         EmtPagerAdapter pageAdapter = new EmtPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pageAdapter);
-
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
     }

@@ -9,11 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".EmtGui"></activity>
-        <activity
-            android:name=".VictimGui"
-            android:label="@string/title_activity_victim_gui"
-            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".VictimGui"></activity>
+        <activity android:name=".EmtGui" />
         <activity android:name=".Main2Activity" />
         <activity android:name=".MainActivity">
             <intent-filter>
