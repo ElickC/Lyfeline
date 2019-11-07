@@ -8,20 +8,13 @@ import com.google.firebase.database.FirebaseDatabase;
 public class VictimUser extends User {
 
     final String USER_COLLECTION_ID = "Victims";
-    String address;
-    String city;
-    String state;
 
     public VictimUser() {
     }
 
-    public VictimUser( String firstName, String lastName, String address, String city,
-                      String state ) {
+    public VictimUser( String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.address = address;
-        this.city = city;
-        this.state = state;
         this.isVictim = true;
         this.isEmt = false;
 
@@ -58,27 +51,5 @@ public class VictimUser extends User {
         isEmt = emt;
     }
 
-    public String getAddress() {
-        return address;
-    }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
 }

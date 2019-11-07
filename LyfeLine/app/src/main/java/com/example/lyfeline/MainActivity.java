@@ -1,35 +1,30 @@
 package com.example.lyfeline;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.android.gms.maps.GoogleMap;
 
@@ -45,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     Button buttonLogin, buttonCreateAcc, buttonMap;
-    EditText emailId, passId;
+    TextInputEditText emailId, passId;
     private Boolean isVictim = false;
     private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
@@ -71,8 +66,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buttonLogin.setOnClickListener(this);
         buttonCreateAcc.setOnClickListener(this);
 
-        emailId = findViewById(R.id.editTextEmail);
-        passId = findViewById(R.id.editTextLast);
+        emailId = findViewById(R.id.textInputEditTextEmailEMT);
+        passId = findViewById(R.id.textInputEditTextPasswordEMT);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -105,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             dialog.show();
         }
         else{
-            Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
+            showToast("You can't make map requests");
         }
         return false;
     }
@@ -133,9 +128,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
+                                Log.d(TAG, "signInWithEmailAndPassword: success");
                                 identifyUser();
                             }
                             else {
+                                Log.d(TAG, "signInWithEmailAndPassword: failure");
                                 try {
                                     throw task.getException();
                                 }
@@ -169,10 +166,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ValueEventListener changeListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d(TAG, "identifyUser/onDataChange: Data has changed");
                 FirebaseUser user = mAuth.getCurrentUser();
                 String userID = user.getUid();
                 //Update user class with modified data
                 readData(dataSnapshot, userID);
+                openGui();
             }
 
             @Override
@@ -183,13 +182,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mDatabase = FirebaseDatabase.getInstance();
         dbRef = mDatabase.getReference();
         dbRef.addValueEventListener(changeListener);
+    }
 
+    public void openGui() {
         // Start GUI activity depending on who user is
         if (isVictim) {
+            Log.d(TAG, "identifyUser: user is Victim, creating intent for VictimGui");
             Intent victimGui = new Intent(this, VictimGui.class);
             startActivity(victimGui);
         }
         else {
+            Log.d(TAG, "identifyUser: user is EMT, creating intent for EmtGui");
             Intent emtGui = new Intent(this, EmtGui.class);
             startActivity(emtGui);
         }
@@ -198,18 +201,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     // Reads data into user class
     public void readData(DataSnapshot ds, String userID) {
         if (ds.hasChild(EMT_PATH  + userID)) {
+            Log.d(TAG, "readData: user is EMT");
             EmtUser user = new EmtUser();
             user.setFirstName(ds.child(EMT_PATH + userID).getValue(VictimUser.class).getFirstName());
             user.setLastName(ds.child(EMT_PATH + userID).getValue(VictimUser.class).getLastName());
             isVictim = false;
         }
         else if (ds.hasChild(VICTIM_PATH  + userID)) {
+            Log.d(TAG, "readData: user is Victim");
             VictimUser user = new VictimUser();
             user.setFirstName(ds.child(VICTIM_PATH + userID).getValue(VictimUser.class).getFirstName());
             user.setLastName(ds.child(VICTIM_PATH + userID).getValue(VictimUser.class).getLastName());
-            user.setCity(ds.child(VICTIM_PATH + userID).getValue(VictimUser.class).getCity());
-            user.setState(ds.child(VICTIM_PATH + userID).getValue(VictimUser.class).getState());
-            user.setAddress(ds.child(VICTIM_PATH + userID).getValue(VictimUser.class).getAddress());
             isVictim = true;
         }
     }

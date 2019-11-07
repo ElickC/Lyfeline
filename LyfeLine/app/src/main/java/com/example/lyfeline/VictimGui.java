@@ -10,6 +10,7 @@ import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 
 public class VictimGui extends AppCompatActivity {
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
