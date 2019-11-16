@@ -75,7 +75,7 @@ public class Main2Activity extends AppCompatActivity {
                 break;
         }
     }
-
+     // TODO add a new activity to handle further registration details
     // Handles victim registration
     public void registerVictim() {
         victimEmail = (EditText) findViewById(R.id.editTextEmail);

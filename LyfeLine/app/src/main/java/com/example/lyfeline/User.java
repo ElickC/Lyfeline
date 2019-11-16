@@ -9,6 +9,4 @@ public class User {
     String lastName;
     Boolean isVictim;
     Boolean isEmt;
-
-
 }
