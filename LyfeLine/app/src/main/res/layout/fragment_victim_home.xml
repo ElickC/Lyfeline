@@ -7,13 +7,60 @@
     tools:context=".VictimHomeFragment">
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/textView9"
+        android:layout_width="282dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="48dp"
+        android:fontFamily="monospace"
+        android:gravity="center"
+        android:text="For EMT Assistance Press the 'Send Help' Button"
+        android:textAllCaps="false"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.426"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewHelloUser" />
+
+    <Button
+        android:id="@+id/buttonSendHelp"
+        android:layout_width="207dp"
+        android:layout_height="85dp"
+        android:layout_marginStart="102dp"
+        android:layout_marginLeft="102dp"
+        android:layout_marginTop="76dp"
+        android:layout_marginEnd="102dp"
+        android:layout_marginRight="102dp"
+        android:text="Send Help"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView11" />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="353dp"
+        android:layout_height="82dp"
+        android:layout_marginTop="32dp"
+        android:fontFamily="monospace"
+        android:gravity="center"
+        android:text="This will send your location to EMT and we will notify you when help is on the way"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView9" />
+
+    <TextView
+        android:id="@+id/textViewHelloUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="178dp"
-        android:layout_marginLeft="178dp"
-        android:layout_marginTop="328dp"
-        android:text="Victim Home Fragment"
+        android:layout_marginTop="177dp"
+        android:fontFamily="monospace"
+        android:text="Hello Victim!"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
