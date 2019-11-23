@@ -23,6 +23,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+
 public class MapActivity extends AppCompatActivity {
 
     private static final String TAG = "MapActivity";
@@ -73,6 +74,24 @@ public class MapActivity extends AppCompatActivity {
             Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage() );
         }
     }
+
+    // Alternate getDeviceLocation
+//    private void getLastKnownLocation(){
+//        Log.d(TAG, "getLastKnownLocation: getting the devices current location");
+//        if(mLocationPermissionGranted){
+//            mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+//                @Override
+//                public void onComplete(@NonNull Task<Location> task) {
+//                    if(task.isSuccessful()){
+//                        Location location = task.getResult();
+//                        GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+//                        Log.e(TAG, "getLastKnownLocation: onComplete: latitude: " + geoPoint.getLatitude() );
+//                        Log.e(TAG, "getLastKnownLocation:  onComplete: longitude: " + geoPoint.getLongitude());
+//                    }
+//                }
+//            });
+//        }
+//    }
 
     private void moveCamera(LatLng latLng, float zoom){
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude );

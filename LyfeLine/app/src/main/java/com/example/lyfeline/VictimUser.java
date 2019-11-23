@@ -16,11 +16,15 @@ public class VictimUser extends User {
     public VictimUser() {
     }
 
-    public VictimUser( String firstName, String lastName) {
+    public VictimUser(String user_id, String email, String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.email = email;
+        this.user_id = user_id;
         this.isVictim = true;
         this.isEmt = false;
+        this.avatar = avatar;
+
     }
 
     public String getFirstName() {
@@ -61,6 +65,30 @@ public class VictimUser extends User {
 
     public String getState() {
         return state;
+    }
+
+    public String getEmail(){
+        return email;
+    }
+
+    public void setEmail(String email){
+        this.email = email;
+    }
+
+    public String getAvatar(){
+        return avatar;
+    }
+
+    public void setAvatar(String avatar){
+        this.avatar = avatar;
+    }
+
+    public String getUser_id(){
+        return user_id;
+    }
+
+    public void setUser_id(String user_id){
+        this.user_id = user_id;
     }
 
     public void setState(String state) {
@@ -146,4 +174,14 @@ public class VictimUser extends User {
         else
             this.condition = condition.NONE;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                ", user_id='" + user_id + '\'' +
+                ", avatar='" + avatar + '\'' +
+                '}';
+    }
+
 }

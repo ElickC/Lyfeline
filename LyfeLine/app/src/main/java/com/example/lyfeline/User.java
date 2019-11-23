@@ -7,6 +7,9 @@ import com.google.firebase.database.FirebaseDatabase;
 public class User {
     String firstName;
     String lastName;
+    String email;
+    String user_id;
+    String avatar;
     Boolean isVictim;
     Boolean isEmt;
 }

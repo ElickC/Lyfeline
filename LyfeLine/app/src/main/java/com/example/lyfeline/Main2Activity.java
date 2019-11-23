@@ -20,7 +20,6 @@ import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
@@ -29,9 +28,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 
 // Activity for creating an account
 public class Main2Activity extends AppCompatActivity {
@@ -47,6 +47,9 @@ public class Main2Activity extends AppCompatActivity {
     // variables
     private Boolean mLocationPermissionGranted = false;
     private FusedLocationProviderClient mFusedLocationProviderClient;
+    private EmtLocation mEmtLocation;
+    private VicLocation mVicLocation;
+
 
     TextInputEditText emtEmail, emtPass, victimEmail, victimPass;
     EditText victimFirstName, victimLastName;
@@ -56,12 +59,8 @@ public class Main2Activity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     final String EMT_CODE = "123";
-    private FirebaseDatabase mDatabase;
-    private DatabaseReference dbRef;
-    final String VICTIM_PATH = "Victims/";
-    final String EMT_PATH = "Emt/";
-    final String LOCATION_PATH = "Locations/";
-    private double lat, lng;
+    private FirebaseFirestore mDb = FirebaseFirestore.getInstance();
+    private boolean isEmt = false, isVic = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +75,8 @@ public class Main2Activity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
+
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
     // Function to identify which button was clicked
@@ -103,7 +104,7 @@ public class Main2Activity extends AppCompatActivity {
         victimFirstName = findViewById(R.id.editTextFirst);
         victimLastName = findViewById(R.id.editTextLast);
 
-        String email = victimEmail.getText().toString();
+        final String email = victimEmail.getText().toString();
         String password = victimPass.getText().toString();
         final String firstN = victimFirstName.getText().toString();
         final String lastN = victimLastName.getText().toString();
@@ -117,9 +118,11 @@ public class Main2Activity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 Log.d(TAG, "createUserWithEmailAndPassword: Victim Successful ");
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                String userID = user.getUid();
-                                createNewVictim(userID, firstN, lastN);
+                                String userID = FirebaseAuth.getInstance().getUid();
+                                isVic = true;
+                                getVicDetails();
+                                createNewVictim(userID, email, firstN, lastN);
+
                             } else {
                                 Log.d(TAG, "createUserWithEmailAndPassword: Victim Failure ");
                                 try {
@@ -148,12 +151,20 @@ public class Main2Activity extends AppCompatActivity {
     }
 
     // Creates new VictimUser class, writes user data to database and starts victimGUI
-    public void createNewVictim(String userID, String firstName, String lastName) {
+    public void createNewVictim(String userID, String email, String firstName, String lastName) {
         getLocationPermission();
-        VictimUser victim = new VictimUser(firstName, lastName);
-        mDatabase = FirebaseDatabase.getInstance();
-        dbRef = mDatabase.getReference(VICTIM_PATH + userID);
-        dbRef.setValue(victim);
+        VictimUser victim = new VictimUser(userID, email, firstName, lastName);
+
+        DocumentReference emtRef = mDb
+                .collection("VicUser")
+                .document(FirebaseAuth.getInstance().getUid());
+
+        emtRef.set(victim).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Log.d(TAG, "createNewVictim: \ninserted vic user into database");
+            }
+        });
 
         Intent victimGui = new Intent(this, VictimGui.class);
         startActivity(victimGui);
@@ -167,7 +178,7 @@ public class Main2Activity extends AppCompatActivity {
         emtLastName = findViewById(R.id.editTextLastEMT);
         emtCode = findViewById(R.id.editTextCodeEMT);
 
-        String email = emtEmail.getText().toString();
+        final String email = emtEmail.getText().toString();
         String password = emtPass.getText().toString();
         final String firstN = emtFirstName.getText().toString();
         final String lastN = emtLastName.getText().toString();
@@ -182,9 +193,10 @@ public class Main2Activity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 Log.d(TAG, "createUserWithEmailAndPassword: EMT Successful ");
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                String userID = user.getUid();
-                                createNewEMT(userID, firstN, lastN);
+                                String userID = FirebaseAuth.getInstance().getUid();
+                                getEmtDetails();
+                                isEmt = true;
+                                createNewEMT(userID, email, firstN, lastN);
                             } else {
                                 Log.d(TAG, "createUserWithEmailAndPassword: EMT Failure ");
                                 try {
@@ -217,13 +229,20 @@ public class Main2Activity extends AppCompatActivity {
     }
 
     // Creates new EmtUser class, writes user data to database and starts EmtGUI
-    public void createNewEMT(String userID, String firstName, String lastName) {
+    public void createNewEMT(String userID, String email, String firstName, String lastName) {
         getLocationPermission();
+        EmtUser emt = new EmtUser(userID, email, firstName, lastName);
 
-        EmtUser emt = new EmtUser(firstName, lastName);
-        mDatabase = FirebaseDatabase.getInstance();
-        dbRef = mDatabase.getReference(EMT_PATH + userID);
-        dbRef.setValue(emt);
+        DocumentReference emtRef = mDb
+                .collection("EmtUser")
+                .document(FirebaseAuth.getInstance().getUid());
+
+        emtRef.set(emt).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Log.d(TAG, "createNewEMT: \ninserted emt user into database");
+            }
+        });
 
         Intent emtGui = new Intent(this, EmtGui.class);
         startActivity(emtGui);
@@ -231,6 +250,92 @@ public class Main2Activity extends AppCompatActivity {
 
     public void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    private void saveUserLocation(){
+
+        FirebaseFirestore mDb = FirebaseFirestore.getInstance();
+
+        if (mEmtLocation != null){
+            DocumentReference locationRef = mDb
+                    .collection("EMTs_Location")
+                    .document(FirebaseAuth.getInstance().getUid());
+
+            locationRef.set(mEmtLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    Log.d(TAG, "saveUserLocation: \ninserted emt location into database" +
+                            "/n lattitude : " + mEmtLocation.getGeo_point().getLatitude() +
+                            "/n longitude : " + mEmtLocation.getGeo_point().getLongitude());
+                }
+            });
+        }
+
+        else if (mVicLocation != null){
+            DocumentReference locationRef = mDb
+                    .collection("Vics_Location")
+                    .document(FirebaseAuth.getInstance().getUid());
+
+            locationRef.set(mVicLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    Log.d(TAG, "saveUserLocation: \ninserted victim location into database" +
+                            "/n lattitude : " + mVicLocation.getGeo_point().getLatitude() +
+                            "/n longitude : " + mVicLocation.getGeo_point().getLongitude());
+                }
+            });
+        }
+
+    }
+
+    private void getEmtDetails(){
+        if(mEmtLocation == null){
+            mEmtLocation = new EmtLocation();
+
+            DocumentReference emtRef = mDb
+                    .collection("EmtUser")
+                    .document(FirebaseAuth.getInstance().getUid());
+
+            emtRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    Log.d(TAG, "getEmtDetails: successfully set the user details");
+
+                    EmtUser emtUser = task.getResult().toObject(EmtUser.class);
+                    mEmtLocation.setEmtUser(emtUser);
+                    ((UserClient)(getApplicationContext())).setUser(emtUser);
+                    getDeviceLocation();
+                }
+            });
+        }
+        else {
+            getDeviceLocation();
+        }
+    }
+
+    private void getVicDetails(){
+        if(mVicLocation == null){
+            mVicLocation = new VicLocation();
+
+            DocumentReference vicRef = mDb
+                    .collection("VicUser")
+                    .document(FirebaseAuth.getInstance().getUid());
+
+            vicRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    Log.d(TAG, "getEmtDetails: successfully set the user details");
+
+                    VictimUser vicUser = task.getResult().toObject(VictimUser.class);
+                    mVicLocation.setVictimUser(vicUser);
+                    ((UserClient)(getApplicationContext())).setUser(vicUser);
+                    getDeviceLocation();
+                }
+            });
+        }
+        else {
+            getDeviceLocation();
+        }
     }
 
     private void getDeviceLocation(){
@@ -246,18 +351,25 @@ public class Main2Activity extends AppCompatActivity {
                         if(task.isSuccessful()){
                             Log.d(TAG, "onComplete: found location");
                             Location currentLocation = (Location) task.getResult();
-                            lat = currentLocation.getLatitude();
-                            lng = currentLocation.getLongitude();
-                            mDatabase = FirebaseDatabase.getInstance();
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            String userID = user.getUid();
-                            dbRef = mDatabase.getReference(LOCATION_PATH + userID);
-                            dbRef.child("lat").setValue(lat);
-                            dbRef.child("lng").setValue(lng);
+
+                            GeoPoint geoPoint = new GeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude());
+
+                            if (isEmt) {
+                                mEmtLocation.setGeo_point(geoPoint);
+                                mEmtLocation.setTimestamp(null);
+                                Log.d(TAG, "userClient: emt");
+                            }
+                            else if (isVic){
+                                mVicLocation.setGeo_point(geoPoint);
+                                mVicLocation.setTimestamp(null);
+                                Log.d(TAG, "userClient: vic");
+                            }
+
+                            saveUserLocation();
 
                         }
                         else{
-                            Log.d(TAG, "onComplete: current location is null");
+                            Log.d(TAG, "getDeviceLocation: current location is null");
                             Toast.makeText(getApplicationContext(), "unable to get current location", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -288,6 +400,7 @@ public class Main2Activity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, permissions,LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

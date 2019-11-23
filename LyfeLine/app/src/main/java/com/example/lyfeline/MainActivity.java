@@ -26,8 +26,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.android.gms.maps.GoogleMap;
 
+import static com.example.lyfeline.Constants.EMT_PATH;
+import static com.example.lyfeline.Constants.ERROR_DIALOG_REQUEST;
+import static com.example.lyfeline.Constants.VICTIM_PATH;
 
 // Activity for home page. Handles user Login and directs Create Account to Main2Activity
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -35,18 +37,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     // creating log
     private static final String TAG = "MainActivity";
 
-    // error if user doesn't have correct version of google services
-    private static final int ERROR_DIALOG_REQUEST = 9001;
-
-
     Button buttonLogin, buttonCreateAcc, buttonMap;
     TextInputEditText emailId, passId;
     private Boolean isVictim = false;
     private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
     private DatabaseReference dbRef;
-    final String VICTIM_PATH = "Victims/";
-    final String EMT_PATH = "Emt/";
+
+    // used to find last known location of device
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
