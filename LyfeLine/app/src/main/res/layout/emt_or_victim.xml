@@ -7,9 +7,43 @@
     tools:context=".Main2Activity">
 
 
+    <View
+        android:id="@+id/divider3"
+        android:layout_width="110dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="65dp"
+        android:background="#AC072B"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonVictim" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:fontFamily="monospace"
+        android:text="OR"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonVictim" />
+
+    <View
+        android:id="@+id/divider4"
+        android:layout_width="110dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginEnd="56dp"
+        android:layout_marginRight="56dp"
+        android:background="#AC072B"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonVictim" />
+
     <Button
         android:id="@+id/buttonVictim"
-        android:layout_width="177dp"
+        android:layout_width="185dp"
         android:layout_height="69dp"
         android:layout_marginTop="208dp"
         android:fontFamily="monospace"
@@ -21,22 +55,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textViewOr"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
-        android:text="@string/or"
-        android:textColor="#AC072b"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonVictim" />
-
     <Button
         android:id="@+id/buttonEMT"
-        android:layout_width="177dp"
+        android:layout_width="185dp"
         android:layout_height="69dp"
         android:layout_marginStart="156dp"
         android:layout_marginLeft="156dp"
@@ -50,6 +71,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewOr" />
+        app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
