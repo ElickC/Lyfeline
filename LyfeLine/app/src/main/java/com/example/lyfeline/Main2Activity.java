@@ -324,7 +324,7 @@ public class Main2Activity extends AppCompatActivity {
             vicRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    Log.d(TAG, "getEmtDetails: successfully set the user details");
+                    Log.d(TAG, "getVicDetails: successfully set the user details");
 
                     VictimUser vicUser = task.getResult().toObject(VictimUser.class);
                     mVicLocation.setVictimUser(vicUser);
