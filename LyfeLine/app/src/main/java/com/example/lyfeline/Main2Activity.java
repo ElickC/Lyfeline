@@ -120,7 +120,7 @@ public class Main2Activity extends AppCompatActivity {
                                 Log.d(TAG, "createUserWithEmailAndPassword: Victim Successful ");
                                 String userID = FirebaseAuth.getInstance().getUid();
                                 isVic = true;
-                                getVicDetails();
+                               //getVicDetails();
                                 createNewVictim(userID, email, firstN, lastN);
 
                             } else {
@@ -155,14 +155,15 @@ public class Main2Activity extends AppCompatActivity {
         getLocationPermission();
         VictimUser victim = new VictimUser(userID, email, firstName, lastName);
 
-        DocumentReference emtRef = mDb
+        DocumentReference vicRef = mDb
                 .collection("VicUser")
                 .document(FirebaseAuth.getInstance().getUid());
 
-        emtRef.set(victim).addOnCompleteListener(new OnCompleteListener<Void>() {
+        vicRef.set(victim).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 Log.d(TAG, "createNewVictim: \ninserted vic user into database");
+                getVicDetails();
             }
         });
 
@@ -194,7 +195,6 @@ public class Main2Activity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 Log.d(TAG, "createUserWithEmailAndPassword: EMT Successful ");
                                 String userID = FirebaseAuth.getInstance().getUid();
-                                getEmtDetails();
                                 isEmt = true;
                                 createNewEMT(userID, email, firstN, lastN);
                             } else {
@@ -241,6 +241,7 @@ public class Main2Activity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 Log.d(TAG, "createNewEMT: \ninserted emt user into database");
+                getEmtDetails();
             }
         });
 
@@ -267,6 +268,7 @@ public class Main2Activity extends AppCompatActivity {
                     Log.d(TAG, "saveUserLocation: \ninserted emt location into database" +
                             "/n lattitude : " + mEmtLocation.getGeo_point().getLatitude() +
                             "/n longitude : " + mEmtLocation.getGeo_point().getLongitude());
+
                 }
             });
         }
@@ -303,6 +305,7 @@ public class Main2Activity extends AppCompatActivity {
 
                     EmtUser emtUser = task.getResult().toObject(EmtUser.class);
                     mEmtLocation.setEmtUser(emtUser);
+                    mEmtLocation.setUser_id(FirebaseAuth.getInstance().getUid());
                     ((UserClient)(getApplicationContext())).setUser(emtUser);
                     getDeviceLocation();
                 }
@@ -328,6 +331,7 @@ public class Main2Activity extends AppCompatActivity {
 
                     VictimUser vicUser = task.getResult().toObject(VictimUser.class);
                     mVicLocation.setVictimUser(vicUser);
+                    mVicLocation.setUser_id(FirebaseAuth.getInstance().getUid());
                     ((UserClient)(getApplicationContext())).setUser(vicUser);
                     getDeviceLocation();
                 }
@@ -390,7 +394,6 @@ public class Main2Activity extends AppCompatActivity {
             if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                     COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 mLocationPermissionGranted = true;
-                getDeviceLocation();
             }
             else{
                 ActivityCompat.requestPermissions(this, permissions,LOCATION_PERMISSION_REQUEST_CODE);
@@ -419,8 +422,6 @@ public class Main2Activity extends AppCompatActivity {
                     }
                     Log.d(TAG, "onRequestPermissionsResult: permission granted");
                     mLocationPermissionGranted = true;
-                    getDeviceLocation();
-
                 }
             }
         }

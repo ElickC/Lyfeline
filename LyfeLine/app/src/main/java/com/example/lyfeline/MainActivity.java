@@ -2,9 +2,13 @@ package com.example.lyfeline;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +30,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import static com.example.lyfeline.Constants.EMT_PATH;
 import static com.example.lyfeline.Constants.ERROR_DIALOG_REQUEST;
@@ -44,6 +53,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private FirebaseDatabase mDatabase;
     private DatabaseReference dbRef;
 
+    // constants
+    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
+
+    // variables
+    private Boolean mLocationPermissionGranted = false;
+
     // used to find last known location of device
 
 
@@ -52,12 +69,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        buttonMap = findViewById(R.id.buttonMap);
-
-        if (isServicesOK()) {
-            init();
-        }
-
+        isServicesOK();
+        getLocationPermission();
 
         buttonLogin = findViewById(R.id.buttonLogin);
         buttonCreateAcc = findViewById(R.id.buttonCreateAccount);
@@ -70,16 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mAuth = FirebaseAuth.getInstance();
 
-    }
 
-    private void init(){
-        buttonMap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, MapActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
     public boolean isServicesOK(){
@@ -109,10 +113,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.buttonLogin:
-                loginUser();
+                Log.d(TAG, "onClick: Login button pressed, checking for location permissions");
+                if(mLocationPermissionGranted) {
+                    Log.d(TAG, "onClick: Location permissions granted, proceeding to Login user");
+                    loginUser();
+                }
+                else {
+                    Log.d(TAG, "onClick: Location permissions  not granted, getting permission");
+                    getLocationPermission();
+                }
                 break;
             case R.id.buttonCreateAccount:
-                registerUser();
+                Log.d(TAG, "onClick: Register button pressed, checking for location permissions");
+                if(mLocationPermissionGranted) {
+                    Log.d(TAG, "onClick: Location permissions granted, proceeding to register user");
+                    registerUser();
+                }
+                else {
+                    Log.d(TAG, "onClick: Location permissions  not granted, getting permission");
+                    getLocationPermission();
+                }
                 break;
         }
     }
@@ -155,63 +175,144 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     // If creating an account go to Main2Activity
     public void registerUser() {
+        Log.d(TAG, "registerUser: starting new activity for registering user");
+
         Intent createAccount = new Intent(this, Main2Activity.class);
         startActivity(createAccount);
     }
 
     // After login, identify whether user is victim or EMT and act accordingly
     public void identifyUser() {
-        //ValueEventListener triggered every time data in database changes
-        ValueEventListener changeListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d(TAG, "identifyUser/onDataChange: Data has changed");
-                FirebaseUser user = mAuth.getCurrentUser();
-                String userID = user.getUid();
-                //Update user class with modified data
-                readData(dataSnapshot, userID);
-                openGui();
-            }
+        Log.d(TAG, "identifyUser: Attempting to identify user as victim or emt by query victim db");
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        };
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        mDatabase = FirebaseDatabase.getInstance();
-        dbRef = mDatabase.getReference();
-        dbRef.addValueEventListener(changeListener);
+        CollectionReference vicRef = db.collection("VicUser");
+
+        Query vicQuery = vicRef.whereEqualTo("user_id", FirebaseAuth.getInstance()
+                .getCurrentUser().getUid());
+
+        vicQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        if (document.exists()) {
+                            Log.d(TAG, "identifyUser: user is Victim");
+                            isVictim = true;
+                            VictimUser user = document.toObject(VictimUser.class);
+                            openGui();
+                        } else {
+                            Log.d(TAG, "identifyUser: user is not Victim, querying Emt db now");
+
+                        }
+                    }
+                }
+            }
+        });
+
+        CollectionReference emtRef = db.collection("EmtUser");
+        Query emtQuery = emtRef.whereEqualTo("user_id", FirebaseAuth.getInstance()
+                .getCurrentUser().getUid());
+
+        emtQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        if (document.exists()) {
+                            Log.d(TAG, "queryEmt: user is EMT");
+                            EmtUser user = document.toObject(EmtUser.class);
+                            isVictim = false;
+                            openGui();
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    public void queryEmt() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        CollectionReference emtRef = db.collection("EmtUser");
+        Query emtQuery = emtRef.whereEqualTo("user_id", FirebaseAuth.getInstance()
+                .getCurrentUser().getUid());
+
+        emtQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                Log.d(TAG, "identifyUser: Checking if query was successful");
+                if(task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        if (document.exists()) {
+                            Log.d(TAG, "queryEmt: user is EMT");
+                            EmtUser user = document.toObject(EmtUser.class);
+                            isVictim = false;
+                            openGui();
+                        }
+                    }
+                }
+                else {
+                    Log.d(TAG, "queryEmt: Could not find user in database");
+                }
+            }
+        });
     }
 
     public void openGui() {
         // Start GUI activity depending on who user is
         if (isVictim) {
-            Log.d(TAG, "identifyUser: user is Victim, creating intent for VictimGui");
+            Log.d(TAG, "openGui: user is Victim, creating intent for VictimGui");
             Intent victimGui = new Intent(this, VictimGui.class);
             startActivity(victimGui);
         }
         else {
-            Log.d(TAG, "identifyUser: user is EMT, creating intent for EmtGui");
+            Log.d(TAG, "openGui: user is EMT, creating intent for EmtGui");
             Intent emtGui = new Intent(this, EmtGui.class);
             startActivity(emtGui);
         }
-
     }
-    // Reads data into user class
-    public void readData(DataSnapshot ds, String userID) {
-        if (ds.hasChild(EMT_PATH  + userID)) {
-            Log.d(TAG, "readData: user is EMT");
-            EmtUser user = new EmtUser();
-            user.setFirstName(ds.child(EMT_PATH + userID).getValue(VictimUser.class).getFirstName());
-            user.setLastName(ds.child(EMT_PATH + userID).getValue(VictimUser.class).getLastName());
-            isVictim = false;
+
+    public void getLocationPermission() {
+        Log.d(TAG, "getLocationPermission: getting location permissions");
+        String[] permissions = {FINE_LOCATION, COARSE_LOCATION};
+
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                    COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                mLocationPermissionGranted = true;
+            }
+            else{
+                ActivityCompat.requestPermissions(this, permissions,LOCATION_PERMISSION_REQUEST_CODE);
+            }
         }
-        else if (ds.hasChild(VICTIM_PATH  + userID)) {
-            Log.d(TAG, "readData: user is Victim");
-            VictimUser user = new VictimUser();
-            user.setFirstName(ds.child(VICTIM_PATH + userID).getValue(VictimUser.class).getFirstName());
-            user.setLastName(ds.child(VICTIM_PATH + userID).getValue(VictimUser.class).getLastName());
-            isVictim = true;
+        else{
+            ActivityCompat.requestPermissions(this, permissions,LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.d(TAG, "onRequestPermissionsResult: called");
+        mLocationPermissionGranted = false;
+
+        switch(requestCode){
+            case LOCATION_PERMISSION_REQUEST_CODE:{
+                if(grantResults.length > 0){
+                    for(int i = 0; i < grantResults.length; i++){
+                        if(grantResults[i] != PackageManager.PERMISSION_GRANTED){
+                            mLocationPermissionGranted = false;
+                            Log.d(TAG, "onRequestPermissionsResult: permission failed");
+                            return;
+                        }
+                    }
+                    Log.d(TAG, "onRequestPermissionsResult: permission granted");
+                    mLocationPermissionGranted = true;
+                }
+            }
         }
     }
 
