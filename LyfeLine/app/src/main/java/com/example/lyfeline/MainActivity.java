@@ -31,6 +31,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -183,82 +184,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     // After login, identify whether user is victim or EMT and act accordingly
     public void identifyUser() {
-        Log.d(TAG, "identifyUser: Attempting to identify user as victim or emt by query victim db");
+        Log.d(TAG, "identifyUser: Attempting to identify user as victim or emt");
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        CollectionReference vicRef = db.collection("VicUser");
+        CollectionReference loginUserRef = db.collection("LoginUser");
 
-        Query vicQuery = vicRef.whereEqualTo("user_id", FirebaseAuth.getInstance()
-                .getCurrentUser().getUid());
+        Query loginUserQuery = loginUserRef
+                .whereEqualTo("user_id", FirebaseAuth.getInstance()
+                        .getCurrentUser().getUid());
 
-        vicQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        loginUserQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         if (document.exists()) {
-                            Log.d(TAG, "identifyUser: user is Victim");
-                            isVictim = true;
-                            VictimUser user = document.toObject(VictimUser.class);
-                            openGui();
-                        } else {
-                            Log.d(TAG, "identifyUser: user is not Victim, querying Emt db now");
-
-                        }
-                    }
-                }
-            }
-        });
-
-        CollectionReference emtRef = db.collection("EmtUser");
-        Query emtQuery = emtRef.whereEqualTo("user_id", FirebaseAuth.getInstance()
-                .getCurrentUser().getUid());
-
-        emtQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        if (document.exists()) {
-                            Log.d(TAG, "queryEmt: user is EMT");
-                            EmtUser user = document.toObject(EmtUser.class);
-                            isVictim = false;
+                            Log.d(TAG, "identifyUser: user found in database");
+                            LoginUsers user =  document.toObject(LoginUsers.class);
+                            isVictim = user.isVictim();
                             openGui();
                         }
-                    }
-                }
-            }
-        });
-    }
-
-    public void queryEmt() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        CollectionReference emtRef = db.collection("EmtUser");
-        Query emtQuery = emtRef.whereEqualTo("user_id", FirebaseAuth.getInstance()
-                .getCurrentUser().getUid());
-
-        emtQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                Log.d(TAG, "identifyUser: Checking if query was successful");
-                if(task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        if (document.exists()) {
-                            Log.d(TAG, "queryEmt: user is EMT");
-                            EmtUser user = document.toObject(EmtUser.class);
-                            isVictim = false;
-                            openGui();
+                        else {
+                            Log.d(TAG, "identifyUser: user not found in database");
                         }
                     }
                 }
                 else {
-                    Log.d(TAG, "queryEmt: Could not find user in database");
+                    Log.d(TAG, "identifyUser: Could not query database");
                 }
             }
         });
+
+
     }
+
 
     public void openGui() {
         // Start GUI activity depending on who user is

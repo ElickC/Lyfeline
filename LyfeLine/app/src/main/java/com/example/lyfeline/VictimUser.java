@@ -21,8 +21,6 @@ public class VictimUser extends User {
         this.lastName = lastName;
         this.email = email;
         this.user_id = user_id;
-        this.isVictim = true;
-        this.isEmt = false;
         this.avatar = avatar;
 
     }
@@ -43,29 +41,9 @@ public class VictimUser extends User {
         this.lastName = lastName;
     }
 
-    public Boolean getIsVictim() {
-        return isVictim;
-    }
+    public void setCity(String city) { this.city = city; }
 
-    public void setIsVictim(Boolean victim) {
-        isVictim = victim;
-    }
-
-    public Boolean getIsEmt() {
-        return isEmt;
-    }
-
-    public void setIsEmt(Boolean emt) {
-        isEmt = emt;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getState() {
-        return state;
-    }
+    public String getState() { return state; }
 
     public String getEmail(){
         return email;
@@ -91,9 +69,7 @@ public class VictimUser extends User {
         this.user_id = user_id;
     }
 
-    public void setState(String state) {
-        this.state = state;
-    }
+    public void setState(String state) { this.state = state; }
 
     public boolean getHeartCondition() {
         return this.heartCondition;

@@ -15,8 +15,6 @@ public class EmtUser extends User {
         this.lastName = lastName;
         this.email = email;
         this.user_id = user_id;
-        this.isVictim = false;
-        this.isEmt = true;
         this.avatar = avatar;
 
     }
@@ -35,22 +33,6 @@ public class EmtUser extends User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public Boolean getIsVictim() {
-        return isVictim;
-    }
-
-    public void setIsVictim(Boolean victim) {
-        isVictim = victim;
-    }
-
-    public Boolean getIsEmt() {
-        return isEmt;
-    }
-
-    public void setIsEmt(Boolean emt) {
-        isEmt = emt;
     }
 
     public String getEmail(){

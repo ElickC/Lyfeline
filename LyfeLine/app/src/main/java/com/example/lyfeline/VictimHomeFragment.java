@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -31,6 +32,7 @@ import com.google.firebase.firestore.QuerySnapshot;
  */
 public class VictimHomeFragment extends Fragment {
     private static final String TAG = "VictimHomeFragment";
+    TextView textHelloUser;
 
     Button buttonSendHelp;
     private FirebaseFirestore mDb = FirebaseFirestore.getInstance();
@@ -46,6 +48,11 @@ public class VictimHomeFragment extends Fragment {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_victim_home, container, false);
+
+        //textHelloUser = view.findViewById(R.id.textViewHelloUser);
+       // User user =  ((UserClient)(getActivity().getApplicationContext())).getUser();
+
+        //textHelloUser.setText(user.firstName);
 
         buttonSendHelp = view.findViewById(R.id.buttonSendHelp);
         buttonSendHelp.setOnClickListener(new View.OnClickListener() {

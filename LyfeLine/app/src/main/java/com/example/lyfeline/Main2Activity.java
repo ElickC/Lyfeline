@@ -84,15 +84,19 @@ public class Main2Activity extends AppCompatActivity {
     public void onClickResolve(View v) {
         switch (v.getId()) {
             case R.id.buttonEMT:
+                Log.d(TAG, "onClick: EMT Create Account button pressed");
                 setContentView(R.layout.emt_create_account);
                 break;
             case R.id.buttonVictim:
+                Log.d(TAG, "onClick: Victim Create Account button pressed");
                 setContentView(R.layout.victim_create_account);
                 break;
             case R.id.buttonRegisterVictim:
+                Log.d(TAG, "onClick: register button pressed, attempting to register victim");
                 registerVictim();
                 break;
             case R.id.buttonRegisterEMT:
+                Log.d(TAG, "onClick: register button pressed, attempting to register emt");
                 registerEMT();
                 break;
         }
@@ -155,6 +159,9 @@ public class Main2Activity extends AppCompatActivity {
     public void createNewVictim(String userID, String email, String firstName, String lastName) {
         getLocationPermission();
         VictimUser victim = new VictimUser(userID, email, firstName, lastName);
+        LoginUsers loginUser = new LoginUsers(true, userID);
+        DocumentReference loginUserRef = mDb.collection("LoginUser").document(userID);
+        loginUserRef.set(loginUser);
 
         DocumentReference vicRef = mDb
                 .collection("VicUser")
@@ -233,6 +240,9 @@ public class Main2Activity extends AppCompatActivity {
     public void createNewEMT(String userID, String email, String firstName, String lastName) {
         getLocationPermission();
         EmtUser emt = new EmtUser(userID, email, firstName, lastName);
+        LoginUsers loginUser = new LoginUsers(false, userID);
+        DocumentReference loginUserRef = mDb.collection("LoginUser").document(userID);
+        loginUserRef.set(loginUser);
 
         DocumentReference emtRef = mDb
                 .collection("EmtUser")
