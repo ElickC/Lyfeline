@@ -32,6 +32,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.maps.GeoApiContext;
 
 // Activity for creating an account
 public class Main2Activity extends AppCompatActivity {
@@ -49,7 +50,7 @@ public class Main2Activity extends AppCompatActivity {
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private EmtLocation mEmtLocation;
     private VicLocation mVicLocation;
-
+    private FirebaseFirestore mDb = FirebaseFirestore.getInstance();
 
     TextInputEditText emtEmail, emtPass, victimEmail, victimPass;
     EditText victimFirstName, victimLastName;
@@ -61,6 +62,7 @@ public class Main2Activity extends AppCompatActivity {
     final String EMT_CODE = "123";
     private FirebaseFirestore mDb = FirebaseFirestore.getInstance();
     private boolean isEmt = false, isVic = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -255,7 +257,7 @@ public class Main2Activity extends AppCompatActivity {
 
     private void saveUserLocation(){
 
-        FirebaseFirestore mDb = FirebaseFirestore.getInstance();
+
 
         if (mEmtLocation != null){
             DocumentReference locationRef = mDb
