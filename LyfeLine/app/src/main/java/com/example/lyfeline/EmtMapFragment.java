@@ -281,6 +281,7 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
                     if(tempDuration < duration){
                         duration = tempDuration;
                         onPolylineClick(polyline);
+                        zoomRoute(polyline.getPoints());
                     }
 
                     // When polylines added to map, remove selected custom marker
@@ -391,6 +392,24 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
             final AlertDialog alert = builder.create();
             alert.show();
         }
+    }
+
+    public void zoomRoute(List<LatLng> lstLatLngRoute) {
+
+        if (mMap == null || lstLatLngRoute == null || lstLatLngRoute.isEmpty()) return;
+
+        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+        for (LatLng latLngPoint : lstLatLngRoute)
+            boundsBuilder.include(latLngPoint);
+
+        int routePadding = 120;
+        LatLngBounds latLngBounds = boundsBuilder.build();
+
+        mMap.animateCamera(
+                CameraUpdateFactory.newLatLngBounds(latLngBounds, routePadding),
+                600,
+                null
+        );
     }
 
 

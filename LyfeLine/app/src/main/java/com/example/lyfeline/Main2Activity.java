@@ -60,7 +60,6 @@ public class Main2Activity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     final String EMT_CODE = "123";
-    private FirebaseFirestore mDb = FirebaseFirestore.getInstance();
     private boolean isEmt = false, isVic = false;
 
 
