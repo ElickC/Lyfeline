@@ -8,13 +8,11 @@ public class VicLocation {
     private GeoPoint geo_point;
     private @ServerTimestamp
     Timestamp timestamp;
-    private String user_id;
     private VictimUser vicUser;
 
-    public VicLocation(GeoPoint geo_point, Timestamp timestamp, String user_id, VictimUser vicUser) {
+    public VicLocation(GeoPoint geo_point, Timestamp timestamp, VictimUser vicUser) {
         this.geo_point = geo_point;
         this.timestamp = timestamp;
-        this.user_id = user_id;
         this.vicUser = vicUser;
     }
 
@@ -46,16 +44,12 @@ public class VicLocation {
         this.vicUser = vicUser;
     }
 
-    public String getUser_id() { return user_id; }
-
-    public void setUser_id(String user_id) { this.user_id = user_id; }
 
     @Override
     public String toString() {
         return "EmtLocation{" +
                 "geo_point=" + geo_point +
                 ", timestamp=" + timestamp +
-                ", user_id=" + user_id +
                 ", vicUser=" + vicUser +
                 '}';
     }

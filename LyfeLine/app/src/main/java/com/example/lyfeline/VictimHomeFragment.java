@@ -59,7 +59,7 @@ public class VictimHomeFragment extends Fragment {
                         .collection("HelpVics")
                         .document(FirebaseAuth.getInstance().getUid());
 
-                Query vicQuery = vicRef.whereEqualTo("user_id", FirebaseAuth.getInstance()
+                Query vicQuery = vicRef.whereEqualTo("victimUser.user_id", FirebaseAuth.getInstance()
                         .getCurrentUser().getUid());
 
                 vicQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {

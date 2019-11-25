@@ -106,7 +106,7 @@ public class VictimMapFragment extends Fragment implements OnMapReadyCallback {
         mMap = map;
 
         CollectionReference vicRef = mDb.collection("Vics_Location");
-        Query vicQuery = vicRef.whereEqualTo("user_id", FirebaseAuth.getInstance()
+        Query vicQuery = vicRef.whereEqualTo("victimUser.user_id", FirebaseAuth.getInstance()
                 .getCurrentUser().getUid());
 
         vicQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {

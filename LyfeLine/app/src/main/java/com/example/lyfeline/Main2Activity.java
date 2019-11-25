@@ -305,7 +305,6 @@ public class Main2Activity extends AppCompatActivity {
 
                     EmtUser emtUser = task.getResult().toObject(EmtUser.class);
                     mEmtLocation.setEmtUser(emtUser);
-                    mEmtLocation.setUser_id(FirebaseAuth.getInstance().getUid());
                     ((UserClient)(getApplicationContext())).setUser(emtUser);
                     getDeviceLocation();
                 }
@@ -331,7 +330,6 @@ public class Main2Activity extends AppCompatActivity {
 
                     VictimUser vicUser = task.getResult().toObject(VictimUser.class);
                     mVicLocation.setVictimUser(vicUser);
-                    mVicLocation.setUser_id(FirebaseAuth.getInstance().getUid());
                     ((UserClient)(getApplicationContext())).setUser(vicUser);
                     getDeviceLocation();
                 }
