@@ -10,35 +10,43 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        android:background="#596C8B"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:titleTextColor="@color/white" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#4A6824"
+        android:background="#596C8B"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:tabBackground="@color/colorPrimary"
         app:tabSelectedTextColor="@android:color/white"
-        app:tabTextColor="@android:color/black">
+        app:tabTextColor="@android:color/black"
+        app:tabIconTint="@drawable/your_color_selector"
+        app:tabIndicatorColor="@color/selected_color">
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/tabHome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/home" />
+            android:icon="@drawable/ic_home_black_48dp" />
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/tabMap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/map" />
+            android:icon="@drawable/ic_pin_drop_black_48dp" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tabHelp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/ic_help_outline_black_48dp" />
 
     </com.google.android.material.tabs.TabLayout>
 

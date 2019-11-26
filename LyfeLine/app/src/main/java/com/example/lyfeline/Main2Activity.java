@@ -266,8 +266,6 @@ public class Main2Activity extends AppCompatActivity {
 
     private void saveUserLocation(){
 
-
-
         if (mEmtLocation != null){
             DocumentReference locationRef = mDb
                     .collection("EMTs_Location")

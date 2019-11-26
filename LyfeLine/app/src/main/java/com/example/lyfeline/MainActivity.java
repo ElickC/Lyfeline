@@ -221,16 +221,54 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     public void openGui() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Start GUI activity depending on who user is
         if (isVictim) {
-            Log.d(TAG, "openGui: user is Victim, creating intent for VictimGui");
-            Intent victimGui = new Intent(this, VictimGui.class);
-            startActivity(victimGui);
+            Log.d(TAG, "openGui: Creating singleton object for Victim user");
+            CollectionReference vicRef = db.collection("VicUser");
+            Query vicQuery = vicRef.whereEqualTo("user_id", FirebaseAuth.getInstance()
+                    .getCurrentUser().getUid());
+            vicQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            if (document.exists()) {
+                                Log.d(TAG, "identifyUser: user found in database");
+                                VictimUser user =  document.toObject(VictimUser.class);
+                                ((UserClient)(getApplicationContext())).setUser(user);
+                                Log.d(TAG, "openGui: user is Victim, creating intent for VictimGui");
+                                Intent victimGui = new Intent(getApplicationContext(), VictimGui.class);
+                                startActivity(victimGui);
+                            }
+                        }
+                    }
+                }
+            });
+
         }
         else {
-            Log.d(TAG, "openGui: user is EMT, creating intent for EmtGui");
-            Intent emtGui = new Intent(this, EmtGui.class);
-            startActivity(emtGui);
+            Log.d(TAG, "openGui: Creating singleton object for EMT user");
+            CollectionReference emtRef = db.collection("EmtUser");
+            Query emtQuery = emtRef.whereEqualTo("user_id", FirebaseAuth.getInstance()
+                    .getCurrentUser().getUid());
+            emtQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            if (document.exists()) {
+                                Log.d(TAG, "identifyUser: user found in database");
+                                EmtUser user =  document.toObject(EmtUser.class);
+                                ((UserClient)(getApplicationContext())).setUser(user);
+                                Log.d(TAG, "openGui: user is EMT, creating intent for EmtGui");
+                                Intent emtGui = new Intent(getApplicationContext(), EmtGui.class);
+                                startActivity(emtGui);
+                            }
+                        }
+                    }
+                }
+            });
         }
     }
 

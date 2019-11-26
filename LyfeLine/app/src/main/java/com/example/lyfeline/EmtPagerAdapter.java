@@ -18,6 +18,8 @@ public class EmtPagerAdapter extends FragmentPagerAdapter {
                 return new EmtHomeFragment();
             case 1:
                 return new EmtMapFragment();
+            case 2:
+                return new EmtHelpFragment();
             default:
                 return null;
         }

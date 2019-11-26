@@ -20,6 +20,8 @@ public class VictimPagerAdapter extends FragmentPagerAdapter {
                 return new VictimHomeFragment();
             case 1:
                 return new VictimMapFragment();
+            case 2:
+                return new VictimHelpFragment();
             default:
                 return null;
         }

@@ -48,11 +48,10 @@ public class VictimHomeFragment extends Fragment {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_victim_home, container, false);
+        textHelloUser = view.findViewById(R.id.textViewHelloUser);
+        User user =  ((UserClient)(getActivity().getApplicationContext())).getUser();
 
-        //textHelloUser = view.findViewById(R.id.textViewHelloUser);
-       // User user =  ((UserClient)(getActivity().getApplicationContext())).getUser();
-
-        //textHelloUser.setText(user.firstName);
+        textHelloUser.setText("Hello " + user.firstName.trim() + "!");
 
         buttonSendHelp = view.findViewById(R.id.buttonSendHelp);
         buttonSendHelp.setOnClickListener(new View.OnClickListener() {
