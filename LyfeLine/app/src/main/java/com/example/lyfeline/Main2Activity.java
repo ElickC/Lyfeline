@@ -159,6 +159,7 @@ public class Main2Activity extends AppCompatActivity {
     public void createNewVictim(String userID, String email, String firstName, String lastName) {
         getLocationPermission();
         VictimUser victim = new VictimUser(userID, email, firstName, lastName);
+        ((UserClient)(getApplicationContext())).setUser(victim);
         LoginUsers loginUser = new LoginUsers(true, userID);
         DocumentReference loginUserRef = mDb.collection("LoginUser").document(userID);
         loginUserRef.set(loginUser);
@@ -170,13 +171,15 @@ public class Main2Activity extends AppCompatActivity {
         vicRef.set(victim).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                Log.d(TAG, "createNewVictim: \ninserted vic user into database");
+                Log.d(TAG, "createNewVictim: inserted vic user into database");
                 getVicDetails();
+
+                Log.d(TAG, "createNewVictim: Creating victim gui intent, starting activity");
+                Intent victimGui = new Intent(getApplicationContext(), VictimGui.class);
+                startActivity(victimGui);
             }
         });
 
-        Intent victimGui = new Intent(this, VictimGui.class);
-        startActivity(victimGui);
     }
 
     // Handles emt registration
@@ -240,6 +243,7 @@ public class Main2Activity extends AppCompatActivity {
     public void createNewEMT(String userID, String email, String firstName, String lastName) {
         getLocationPermission();
         EmtUser emt = new EmtUser(userID, email, firstName, lastName);
+        ((UserClient)(getApplicationContext())).setUser(emt);
         LoginUsers loginUser = new LoginUsers(false, userID);
         DocumentReference loginUserRef = mDb.collection("LoginUser").document(userID);
         loginUserRef.set(loginUser);
@@ -253,11 +257,12 @@ public class Main2Activity extends AppCompatActivity {
             public void onComplete(@NonNull Task<Void> task) {
                 Log.d(TAG, "createNewEMT: \ninserted emt user into database");
                 getEmtDetails();
+                Log.d(TAG, "createNewEMT: Creating emt gui intent, starting activity");
+                Intent emtGui = new Intent(getApplicationContext(), EmtGui.class);
+                startActivity(emtGui);
             }
         });
 
-        Intent emtGui = new Intent(this, EmtGui.class);
-        startActivity(emtGui);
     }
 
     public void showToast(String message) {
@@ -310,12 +315,14 @@ public class Main2Activity extends AppCompatActivity {
             emtRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    Log.d(TAG, "getEmtDetails: successfully set the user details");
-
-                    EmtUser emtUser = task.getResult().toObject(EmtUser.class);
-                    mEmtLocation.setEmtUser(emtUser);
-                    ((UserClient)(getApplicationContext())).setUser(emtUser);
-                    getDeviceLocation();
+                    if(task.isSuccessful()) {
+                        Log.d(TAG, "getEmtDetails: successfully set the user details");
+                        EmtUser emtUser = task.getResult().toObject(EmtUser.class);
+                        mEmtLocation.setEmtUser(emtUser);
+                        ((UserClient) (getApplicationContext())).setUser(emtUser);
+                        getDeviceLocation();
+                        Log.d(TAG, "getEmtDetails: successfully set the user details");
+                    }
                 }
             });
         }
@@ -335,12 +342,14 @@ public class Main2Activity extends AppCompatActivity {
             vicRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    Log.d(TAG, "getVicDetails: successfully set the user details");
-
-                    VictimUser vicUser = task.getResult().toObject(VictimUser.class);
-                    mVicLocation.setVictimUser(vicUser);
-                    ((UserClient)(getApplicationContext())).setUser(vicUser);
-                    getDeviceLocation();
+                    if(task.isSuccessful()) {
+                        Log.d(TAG, "getVicDetails: setting user details");
+                        VictimUser vicUser = task.getResult().toObject(VictimUser.class);
+                        mVicLocation.setVictimUser(vicUser);
+                        ((UserClient) (getApplicationContext())).setUser(vicUser);
+                        getDeviceLocation();
+                        Log.d(TAG, "getVicDetails: successfully set the user details");
+                    }
                 }
             });
         }

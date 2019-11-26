@@ -12,7 +12,7 @@
         android:layout_height="50dp"
         android:layout_marginStart="24dp"
         android:layout_marginLeft="24dp"
-        android:layout_marginTop="244dp"
+        android:layout_marginTop="264dp"
         android:layout_marginEnd="29dp"
         android:layout_marginRight="29dp"
         android:src="@drawable/ic_home_black_48dp"
@@ -27,7 +27,7 @@
         android:layout_height="50dp"
         android:layout_marginStart="24dp"
         android:layout_marginLeft="24dp"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="224dp"
         android:layout_marginEnd="29dp"
         android:layout_marginRight="29dp"
         android:src="@drawable/ic_pin_drop_black_48dp"
@@ -57,12 +57,12 @@
     <TextView
         android:id="@+id/textView6"
         android:layout_width="279dp"
-        android:layout_height="173dp"
+        android:layout_height="219dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
         android:fontFamily="monospace"
-        android:text='Press the "Send Help" button and your location will be sent to EMT.  After you have pressed this button, help will be sent to you as soon as possible. Your status can be monitored on the Maps page.'
+        android:text='Press the "Send Help" button and your location will be sent to EMT. Enter any additional information before pressing the button to let us know about your condition.  After you have pressed this button, help will be sent to you as soon as possible. Your status can be monitored on the Maps page.'
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView5" />

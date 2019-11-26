@@ -157,9 +157,10 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         if (document.exists()) {
                             Log.d(TAG, "onMapReady: Successfully got victims location");
-                            VicLocation user = document.toObject(VicLocation.class);
-                            GeoPoint userLoc = user.getGeo_point();
-                            String firstName = user.getVictimUser().getFirstName();
+                            HelpVics helpVic = document.toObject(HelpVics.class);
+                            VicLocation vicLocation = helpVic.getVicLocation();
+                            GeoPoint userLoc = vicLocation.getGeo_point();
+                            String firstName = vicLocation.getVictimUser().getFirstName();
                             addMarker(userLoc, firstName, DEFAULT_ZOOM);
                         }
                     }

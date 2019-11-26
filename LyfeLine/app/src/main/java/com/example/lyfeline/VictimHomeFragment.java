@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -33,6 +34,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 public class VictimHomeFragment extends Fragment {
     private static final String TAG = "VictimHomeFragment";
     TextView textHelloUser;
+    TextInputEditText textMessage;
 
     Button buttonSendHelp;
     private FirebaseFirestore mDb = FirebaseFirestore.getInstance();
@@ -49,15 +51,18 @@ public class VictimHomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_victim_home, container, false);
         textHelloUser = view.findViewById(R.id.textViewHelloUser);
+        textMessage = view.findViewById(R.id.textInputEditTextMessage);
         User user =  ((UserClient)(getActivity().getApplicationContext())).getUser();
 
-        textHelloUser.setText("Hello " + user.firstName.trim() + "!");
+        String firstName = user.firstName.substring(0, 1).toUpperCase() + user.firstName.substring(1);
+        textHelloUser.setText("Hello " + firstName.trim() + "!");
 
         buttonSendHelp = view.findViewById(R.id.buttonSendHelp);
         buttonSendHelp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: Victim attempting to send location to database for help");
+                final String message = textMessage.getText().toString();
 
                 CollectionReference vicRef = mDb.collection("Vics_Location");
 
@@ -74,8 +79,12 @@ public class VictimHomeFragment extends Fragment {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 if (document.exists()) {
-                                    VicLocation user = document.toObject(VicLocation.class);
-                                    vicHelpRef.set(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    HelpVics helpVic = new HelpVics();
+                                    helpVic.setMessage(message);
+                                    VicLocation userLoc = document.toObject(VicLocation.class);
+                                    helpVic.setVicLocation(userLoc);
+
+                                    vicHelpRef.set(helpVic).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             Log.d(TAG, "onClick: Victim location successfully sent to database ");
