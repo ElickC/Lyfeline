@@ -4,12 +4,14 @@ package com.example.lyfeline;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -23,11 +25,16 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import org.w3c.dom.Document;
 
 import static com.example.lyfeline.Constants.MAPVIEW_BUNDLE_KEY;
 
@@ -40,6 +47,7 @@ public class VictimMapFragment extends Fragment implements OnMapReadyCallback {
     private static final String TAG = "VictimMapFragment";
     private GoogleMap mMap;
     private static final float DEFAULT_ZOOM = 15f;
+    TextView textViewStatus;
 
     public VictimMapFragment() {
         // Required empty public constructor
@@ -51,6 +59,8 @@ public class VictimMapFragment extends Fragment implements OnMapReadyCallback {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_victim_map, container, false);
+
+        textViewStatus = view.findViewById(R.id.textViewStatus);
 
 
         mMapView = view.findViewById(R.id.mapView);
@@ -104,6 +114,29 @@ public class VictimMapFragment extends Fragment implements OnMapReadyCallback {
         Log.d(TAG, "onMapReady: Getting victims location" );
         FirebaseFirestore mDb = FirebaseFirestore.getInstance();
         mMap = map;
+
+
+        DocumentReference docRef = mDb.collection("HelpVics").document(FirebaseAuth.getInstance()
+                .getCurrentUser().getUid());
+        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if (documentSnapshot != null && documentSnapshot.exists()) {
+                    HelpVics helpVic = documentSnapshot.toObject(HelpVics.class);
+                    //set status based on booleans
+                    if(helpVic.emtOnTheWay) {
+                        textViewStatus.setText("EMT is on the way");
+                    }
+                    else if(helpVic.emtHasArrived) {
+                        textViewStatus.setText("EMT has arrived");
+                    }
+                    else {
+                        textViewStatus.setText("EMT has been notified");
+                    }
+
+                }
+            }
+        });
 
         CollectionReference vicRef = mDb.collection("Vics_Location");
         Query vicQuery = vicRef.whereEqualTo("victimUser.user_id", FirebaseAuth.getInstance()
