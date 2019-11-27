@@ -114,7 +114,7 @@ public class VictimMapFragment extends Fragment implements OnMapReadyCallback {
         Log.d(TAG, "onMapReady: Getting victims location" );
         FirebaseFirestore mDb = FirebaseFirestore.getInstance();
         mMap = map;
-
+        mMap.setMyLocationEnabled(true);
 
         DocumentReference docRef = mDb.collection("HelpVics").document(FirebaseAuth.getInstance()
                 .getCurrentUser().getUid());

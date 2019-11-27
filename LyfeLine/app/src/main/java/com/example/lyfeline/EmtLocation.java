@@ -19,7 +19,7 @@ public class EmtLocation {
     }
 
     public EmtLocation() {
-
+        // needed for Firestore
     }
 
     public GeoPoint getGeo_point() {
