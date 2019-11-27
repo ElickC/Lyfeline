@@ -117,18 +117,18 @@ public class VicLocationService extends Service {
                             VictimUser user = ((VictimUser)((UserClient)(getApplicationContext())).getUser());
                             GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
                             VicLocation userLocation = new VicLocation(geoPoint,null,  user);
-                            saveEmtLocation(userLocation);
+                            saveVicLocation(userLocation);
                         }
                     }
                 },
                 Looper.myLooper()); // Looper.myLooper tells this to repeat forever until thread is destroyed
     }
 
-    private void saveEmtLocation(final VicLocation userLocation){
+    private void saveVicLocation(final VicLocation userLocation){
 
         try{
             DocumentReference locationRef = FirebaseFirestore.getInstance()
-                    .collection("EMTs_Location")
+                    .collection("Vics_Location")
                     .document(FirebaseAuth.getInstance().getUid());
 
             locationRef.set(userLocation).addOnCompleteListener(new OnCompleteListener<Void>() {

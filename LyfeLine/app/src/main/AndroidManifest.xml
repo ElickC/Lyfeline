@@ -52,6 +52,10 @@
             android:stopWithTask="true">
         </service>
 
+        <service android:name=".services.VicLocationService"
+            android:stopWithTask="true">
+        </service>
+
     </application>
 
 </manifest>
