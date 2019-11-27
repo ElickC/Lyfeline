@@ -87,6 +87,7 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_emt_map, container, false);
         mMapView = view.findViewById(R.id.mapView);
+        view.findViewById(R.id.btn_reset_map).setOnClickListener(this);
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
@@ -100,6 +101,7 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
             mGeoApiContext = new GeoApiContext.Builder()
                     .apiKey(getString(R.string.google_maps_API_key)).build();
         }
+
         getEmtPosition();
         return view;
     }
@@ -179,7 +181,7 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
 
     // Retrieve EmtPoistion info from DB
     private void getEmtPosition(){
-
+        Log.d(TAG, "getEmtPosition: Begin" + mEmtPosition);
         DocumentReference locationRef = mDb
                 .collection("EMTs_Location")
                 .document(FirebaseAuth.getInstance().getUid());
@@ -192,13 +194,15 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
 
             }
         });
+        Log.d(TAG, "getEmtPosition: End" + mEmtPosition);
+
     }
 
     private void calculateDirections(Marker marker){
 
         Log.d(TAG, "calculateDirections: calculating directions.");
 
-
+        getEmtPosition();
 
         com.google.maps.model.LatLng destination = new com.google.maps.model.LatLng(
                 marker.getPosition().latitude,
@@ -305,7 +309,7 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
 
             // if passed polyline has the same id as the one that was clicked, make it blue
             if(polyline.getId().equals(polylineData.getPolyline().getId())){
-                polylineData.getPolyline().setColor(ContextCompat.getColor(getActivity(), R.color.blue1));
+                polylineData.getPolyline().setColor(ContextCompat.getColor(getActivity(), R.color.blue));
                 polylineData.getPolyline().setZIndex(1);
 
                 LatLng endLocation = new LatLng(
@@ -370,7 +374,7 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
     @Override
     public void onInfoWindowClick(final Marker marker) {
         vicName = marker.getTitle();
-        if(marker.getId().equals("duyen")){
+        if(marker.getId().equals("self")){
             marker.hideInfoWindow();
         }
         else{
@@ -413,5 +417,13 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
         );
     }
 
+    private void moveCamera(LatLng latLng, float zoom){
+        Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude );
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+
+//        moveCamera(new LatLng(mEmtPosition.getGeo_point().getLatitude(),
+//                        mEmtPosition.getGeo_point().getLongitude()),
+//                DEFAULT_ZOOM);
+    }
 
 }

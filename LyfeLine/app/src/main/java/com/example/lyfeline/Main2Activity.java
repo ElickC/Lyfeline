@@ -79,7 +79,7 @@ public class Main2Activity extends AppCompatActivity {
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
     }
-
+    
     // Function to identify which button was clicked
     public void onClickResolve(View v) {
         switch (v.getId()) {
@@ -258,7 +258,7 @@ public class Main2Activity extends AppCompatActivity {
                 Log.d(TAG, "createNewEMT: \ninserted emt user into database");
                 getEmtDetails();
                 Log.d(TAG, "createNewEMT: Creating emt gui intent, starting activity");
-                Intent emtGui = new Intent(getApplicationContext(), EmtGui.class);
+                Intent emtGui = new Intent(getApplicationContext(), EmtActivity.class);
                 startActivity(emtGui);
             }
         });

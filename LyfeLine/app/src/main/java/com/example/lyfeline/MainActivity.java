@@ -24,22 +24,14 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import static com.example.lyfeline.Constants.EMT_PATH;
 import static com.example.lyfeline.Constants.ERROR_DIALOG_REQUEST;
-import static com.example.lyfeline.Constants.VICTIM_PATH;
+
 
 // Activity for home page. Handles user Login and directs Create Account to Main2Activity
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -47,12 +39,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     // creating log
     private static final String TAG = "MainActivity";
 
-    Button buttonLogin, buttonCreateAcc, buttonMap;
+    Button buttonLogin, buttonCreateAcc;
     TextInputEditText emailId, passId;
     private Boolean isVictim = false;
     private FirebaseAuth mAuth;
-    private FirebaseDatabase mDatabase;
-    private DatabaseReference dbRef;
+
 
     // constants
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -108,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         return false;
     }
+      
 
     // Overriding onClick to handle buttons clicked
     @Override
@@ -262,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 EmtUser user =  document.toObject(EmtUser.class);
                                 ((UserClient)(getApplicationContext())).setUser(user);
                                 Log.d(TAG, "openGui: user is EMT, creating intent for EmtGui");
-                                Intent emtGui = new Intent(getApplicationContext(), EmtGui.class);
+                                Intent emtGui = new Intent(getApplicationContext(), EmtActivity.class);
                                 startActivity(emtGui);
                             }
                         }
@@ -317,6 +309,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
+
 }
 
 
