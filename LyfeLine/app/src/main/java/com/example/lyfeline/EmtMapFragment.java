@@ -102,7 +102,10 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
                     .apiKey(getString(R.string.google_maps_API_key)).build();
         }
 
+
         getEmtPosition();
+
+
         return view;
     }
 
@@ -181,7 +184,9 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
 
     // Retrieve EmtPoistion info from DB
     private void getEmtPosition(){
+        int timesCalled = 0;
         Log.d(TAG, "getEmtPosition: Begin" + mEmtPosition);
+        Log.d(TAG, "getEmtPosition: times called: " + timesCalled);
         DocumentReference locationRef = mDb
                 .collection("EMTs_Location")
                 .document(FirebaseAuth.getInstance().getUid());
