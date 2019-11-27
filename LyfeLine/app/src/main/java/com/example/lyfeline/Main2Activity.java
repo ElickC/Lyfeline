@@ -104,7 +104,6 @@ public class Main2Activity extends AppCompatActivity {
      // TODO add a new activity to handle further registration details
     // Handles victim registration
     public void registerVictim() {
-        isVic = true;
         victimEmail = findViewById(R.id.textInputEditTextEmailVictim);
         victimPass =  findViewById(R.id.textInputEditTextPasswordVictim);
         victimFirstName = findViewById(R.id.editTextFirst);
@@ -125,10 +124,8 @@ public class Main2Activity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 Log.d(TAG, "createUserWithEmailAndPassword: Victim Successful ");
                                 String userID = FirebaseAuth.getInstance().getUid();
-
-                               //getVicDetails();
+                                isVic = true;
                                 createNewVictim(userID, email, firstN, lastN);
-
                             } else {
                                 Log.d(TAG, "createUserWithEmailAndPassword: Victim Failure ");
                                 try {
@@ -185,7 +182,6 @@ public class Main2Activity extends AppCompatActivity {
 
     // Handles emt registration
     public void registerEMT() {
-        isEmt = true;
         emtEmail = findViewById(R.id.textInputEditTextEmailEMT);
         emtPass = findViewById(R.id.textInputEditTextPasswordEMT);
         emtFirstName = findViewById(R.id.editTextFirstEMT);
@@ -208,7 +204,7 @@ public class Main2Activity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 Log.d(TAG, "createUserWithEmailAndPassword: EMT Successful ");
                                 String userID = FirebaseAuth.getInstance().getUid();
-
+                                isEmt = true;
                                 createNewEMT(userID, email, firstN, lastN);
                             } else {
                                 Log.d(TAG, "createUserWithEmailAndPassword: EMT Failure ");
@@ -318,12 +314,13 @@ public class Main2Activity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if(task.isSuccessful()) {
-                        Log.d(TAG, "getEmtDetails: successfully set the user details");
+                        Log.d(TAG, "Main2Activity getEmtDetails: successfully set the user details");
                         EmtUser emtUser = task.getResult().toObject(EmtUser.class);
                         mEmtLocation.setEmtUser(emtUser);
                         ((UserClient) (getApplicationContext())).setUser(emtUser);
                         getDeviceLocation();
                         Log.d(TAG, "getEmtDetails: successfully set the user details");
+
                     }
                 }
             });

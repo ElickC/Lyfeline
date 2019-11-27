@@ -20,14 +20,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 
 public class EmtActivity extends AppCompatActivity {
 
     private static final String TAG = "EmtActivity";
 
     FirebaseFirestore mDb = FirebaseFirestore.getInstance();
-    private EmtLocation mEmtPosition = null;
-
+    private EmtLocation mEmtLocation;
+    private GeoPoint mEmtPosition;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +48,6 @@ public class EmtActivity extends AppCompatActivity {
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         startLocationService();
-        getEmtPosition();
     }
 
     private void startLocationService(){
@@ -78,22 +78,4 @@ public class EmtActivity extends AppCompatActivity {
         return false;
     }
 
-    // Retrieve EmtPoistion info from DB
-    private void getEmtPosition(){
-        Log.d(TAG, "getEmtPosition: Begin" + mEmtPosition);
-        DocumentReference locationRef = mDb
-                .collection("EMTs_Location")
-                .document(FirebaseAuth.getInstance().getUid());
-
-        locationRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-
-                mEmtPosition = task.getResult().toObject(EmtLocation.class);
-
-            }
-        });
-        Log.d(TAG, "getEmtPosition: End" + mEmtPosition);
-
-    }
 }

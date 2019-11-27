@@ -48,6 +48,8 @@ import com.google.maps.model.DirectionsRoute;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.example.lyfeline.Constants.MAPVIEW_BUNDLE_KEY;
 
@@ -67,7 +69,8 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
     private static final String TAG = "EmtMapFragment";
     private static final float DEFAULT_ZOOM = 15f;
     private GeoApiContext mGeoApiContext = null;
-    private EmtLocation mEmtPosition = null;
+    private EmtLocation mEmtLocation;
+    private GeoPoint mEmtPosition;
     private LatLngBounds mMapBoundary;
     private ArrayList<EmtUser> mEmtUserList = new ArrayList<>();
     private ArrayList<PolylineData> mPolylinesData = new ArrayList<>();
@@ -103,8 +106,7 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
         }
 
 
-        getEmtPosition();
-
+        getEmtLocation();
 
         return view;
     }
@@ -172,7 +174,7 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
                 }
             }
         });
-
+        
     }
 
     public void addMarker(GeoPoint loc, String name, float zoom) {
@@ -183,10 +185,8 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     // Retrieve EmtPoistion info from DB
-    private void getEmtPosition(){
-        int timesCalled = 0;
-        Log.d(TAG, "getEmtPosition: Begin" + mEmtPosition);
-        Log.d(TAG, "getEmtPosition: times called: " + timesCalled);
+    private void getEmtLocation(){
+        
         DocumentReference locationRef = mDb
                 .collection("EMTs_Location")
                 .document(FirebaseAuth.getInstance().getUid());
@@ -194,20 +194,19 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
         locationRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-
-                mEmtPosition = task.getResult().toObject(EmtLocation.class);
-
+                mEmtLocation = task.getResult().toObject(EmtLocation.class);
             }
         });
-        Log.d(TAG, "getEmtPosition: End" + mEmtPosition);
 
     }
+
+
 
     private void calculateDirections(Marker marker){
 
         Log.d(TAG, "calculateDirections: calculating directions.");
 
-        getEmtPosition();
+        getEmtLocation();
 
         com.google.maps.model.LatLng destination = new com.google.maps.model.LatLng(
                 marker.getPosition().latitude,
@@ -220,8 +219,8 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
                 directions.alternatives(true);
         directions.origin(
                 new com.google.maps.model.LatLng(
-                        mEmtPosition.getGeo_point().getLatitude(),
-                        mEmtPosition.getGeo_point().getLongitude()
+                        mEmtLocation.getGeo_point().getLatitude(),
+                        mEmtLocation.getGeo_point().getLongitude()
                 )
         );
         Log.d(TAG, "calculateDirections: destination: " + destination.toString());
@@ -422,13 +421,10 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
         );
     }
 
-    private void moveCamera(LatLng latLng, float zoom){
+    private void moveCamera(final LatLng latLng, final float zoom){
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude );
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
-
-//        moveCamera(new LatLng(mEmtPosition.getGeo_point().getLatitude(),
-//                        mEmtPosition.getGeo_point().getLongitude()),
-//                DEFAULT_ZOOM);
     }
+
 
 }
