@@ -30,7 +30,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import static com.example.lyfeline.Constants.ERROR_DIALOG_REQUEST;
+import static com.example.lyfeline.util.Constants.ERROR_DIALOG_REQUEST;
 
 
 // Activity for home page. Handles user Login and directs Create Account to Main2Activity
@@ -261,6 +261,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
             });
+
+
+
         }
     }
 

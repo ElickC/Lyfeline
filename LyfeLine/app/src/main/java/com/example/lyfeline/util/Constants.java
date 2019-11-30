@@ -1,4 +1,4 @@
-package com.example.lyfeline;
+package com.example.lyfeline.util;
 
 public class Constants {
 

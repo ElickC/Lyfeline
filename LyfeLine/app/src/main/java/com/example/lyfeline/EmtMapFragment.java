@@ -1,6 +1,7 @@
 package com.example.lyfeline;
 
 
+import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -15,8 +17,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.example.lyfeline.models.PolylineData;
+import com.example.lyfeline.util.ViewWeightAnimationWrapper;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -50,7 +54,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-import static com.example.lyfeline.Constants.MAPVIEW_BUNDLE_KEY;
+import static com.example.lyfeline.util.Constants.MAPVIEW_BUNDLE_KEY;
 
 
 /**
@@ -61,8 +65,11 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
                                                         GoogleMap.OnInfoWindowClickListener,
                                                         GoogleMap.OnPolylineClickListener{
 
+    // constants
+    private static final int MAP_LAYOUT_STATE_CONTRACTED = 0;
+    private static final int MAP_LAYOUT_STATE_EXPANDED = 1;
 
-    private MapView mMapView;
+    // variables
     private GoogleMap mMap;
     private FirebaseFirestore mDb = FirebaseFirestore.getInstance();
     private static final String TAG = "EmtMapFragment";
@@ -74,8 +81,12 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
     private ArrayList<PolylineData> mPolylinesData = new ArrayList<>();
     private Marker mSelectedMarker = null;
     private String vicName = null;
+    private int mMapLayoutState = 0;
 
-
+    // widgets
+    private MapView mMapView;
+    private RecyclerView mUserListRecyclerView;
+    private RelativeLayout mMapContainer;
 
     public EmtMapFragment() {
         // Required empty public constructor
@@ -87,8 +98,15 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_emt_map, container, false);
+        mUserListRecyclerView = view.findViewById(R.id.vic_list_recycler_view);
         mMapView = view.findViewById(R.id.mapView);
-        //view.findViewById(R.id.btn_reset_map).setOnClickListener(this);
+
+        mMapContainer = view.findViewById(R.id.map_container);
+
+        view.findViewById(R.id.btn_full_screen_map).setOnClickListener(this);
+        view.findViewById(R.id.btn_reset_map).setOnClickListener(this);
+
+
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
@@ -371,41 +389,44 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
         mMapView.onLowMemory();
     }
 
-    // For half screen if we have time
     @Override
     public void onClick(View v) {
-//        switch (v.getId()){
-//            case R.id.btn_full_screen_map:{
-//                if (mMapLayoutState == MAP_LAYOUT_STATE_CONTRACTED){
-//                    mMapLayoutState = MAP_LAYOUT_STATE_EXPANDED;
-//                    expandMapAnimation();
-//                }
-//                else if (mMapLayoutState == MAP_LAYOUT_STATE_EXPANDED){
-//                    mMapLayoutState = MAP_LAYOUT_STATE_CONTRACTED;
-//                    contractMapAnimation();
-//                }
-//                break;
-//            }
-//        }
+        switch (v.getId()){
+            case R.id.btn_full_screen_map:{
+
+                // if map is contracted, switch it to expanded
+                if(mMapLayoutState == MAP_LAYOUT_STATE_CONTRACTED){
+                    mMapLayoutState = MAP_LAYOUT_STATE_EXPANDED;
+                    expandMapAnimation();
+                }
+                // if map is expanded, switch to contracted
+                else if(mMapLayoutState == MAP_LAYOUT_STATE_EXPANDED){
+                    mMapLayoutState = MAP_LAYOUT_STATE_CONTRACTED;
+                    contractMapAnimation();
+                }
+                break;
+            }
+
+        }
     }
 
     // When user clicks on marker alert dialog calculate directions
     @Override
     public void onInfoWindowClick(final Marker marker) {
         vicName = marker.getTitle();
-        if(marker.getId().equals("self")){
-            marker.hideInfoWindow();
-        }
-        else{
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage("Navigate to " + marker.getTitle() + " ?")
+            builder.setMessage("Navigate to " + vicName + " ?")
                     .setCancelable(true)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                             mSelectedMarker = marker;
                             calculateDirections(marker);
                             dialog.dismiss();
+                            builder.setMessage(vicName);
+                            marker.setTitle(vicName);
+                            Log.d(TAG, "onInfoClick Inside: marker.getTitle: " + marker.getTitle());
+                            Log.d(TAG, "onInfoClick Inside: vicName: " + vicName);
                         }
                     })
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -415,7 +436,12 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
                     });
             final AlertDialog alert = builder.create();
             alert.show();
-        }
+            Log.d(TAG, "onInfoClick: marker.getTitle: " + marker.getTitle());
+            Log.d(TAG, "onInfoClick Inside: vicName: " + vicName);
+
+
+
+
     }
 
     public void zoomRoute(List<LatLng> lstLatLngRoute) {
@@ -441,5 +467,43 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
 
+    // changing properties over time to render map expansion animation
+    private void expandMapAnimation(){
+        ViewWeightAnimationWrapper mapAnimationWrapper = new ViewWeightAnimationWrapper(mMapContainer);
+        ObjectAnimator mapAnimation = ObjectAnimator.ofFloat(mapAnimationWrapper,
+                "weight",
+                50,
+                100);
+        mapAnimation.setDuration(800);
 
+        ViewWeightAnimationWrapper recyclerAnimationWrapper = new ViewWeightAnimationWrapper(mUserListRecyclerView);
+        ObjectAnimator recyclerAnimation = ObjectAnimator.ofFloat(recyclerAnimationWrapper,
+                "weight",
+                50,
+                0);
+        recyclerAnimation.setDuration(800);
+
+        recyclerAnimation.start();
+        mapAnimation.start();
+    }
+
+    // changing properties over time to render map contraction animation
+    private void contractMapAnimation(){
+        ViewWeightAnimationWrapper mapAnimationWrapper = new ViewWeightAnimationWrapper(mMapContainer);
+        ObjectAnimator mapAnimation = ObjectAnimator.ofFloat(mapAnimationWrapper,
+                "weight",
+                100,
+                50);
+        mapAnimation.setDuration(800);
+
+        ViewWeightAnimationWrapper recyclerAnimationWrapper = new ViewWeightAnimationWrapper(mUserListRecyclerView);
+        ObjectAnimator recyclerAnimation = ObjectAnimator.ofFloat(recyclerAnimationWrapper,
+                "weight",
+                0,
+                50);
+        recyclerAnimation.setDuration(800);
+
+        recyclerAnimation.start();
+        mapAnimation.start();
+    }
 }
