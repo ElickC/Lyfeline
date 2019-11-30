@@ -18,6 +18,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -61,7 +63,6 @@ public class VictimMapFragment extends Fragment implements OnMapReadyCallback {
         View view = inflater.inflate(R.layout.fragment_victim_map, container, false);
 
         textViewStatus = view.findViewById(R.id.textViewStatus);
-
 
         mMapView = view.findViewById(R.id.mapView);
         Bundle mapViewBundle = null;
@@ -134,6 +135,10 @@ public class VictimMapFragment extends Fragment implements OnMapReadyCallback {
                         textViewStatus.setText("EMT has been notified");
                     }
 
+                    if (helpVic.getEmtAssigned() != null ) {
+                        queryEmtLocation(helpVic.getEmtAssigned());
+                    }
+
                 }
             }
         });
@@ -158,6 +163,83 @@ public class VictimMapFragment extends Fragment implements OnMapReadyCallback {
                 }
             }
         });
+
+    }
+
+    public void queryEmtLocation(String emtUserID) {
+        FirebaseFirestore mDb = FirebaseFirestore.getInstance();
+
+        DocumentReference docRef = mDb.collection("EMTs_Location").document(emtUserID);
+
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()) {
+                    Log.d(TAG, "queryEMT: adding EMT's location marker to victim's map");
+                    EmtLocation emtAssigned = task.getResult().toObject(EmtLocation.class);
+                    GeoPoint emtLocation = emtAssigned.getGeo_point();
+                    BitmapDescriptor emtIcon = BitmapDescriptorFactory.fromResource(R.drawable.outline_directions_car_black_18dp);
+                    LatLng emtLatLng = new LatLng(emtLocation.getLatitude(), emtLocation.getLongitude());
+                    MarkerOptions emtMarkerOptions = new MarkerOptions().position(emtLatLng)
+                            .title("EMT")
+                            .icon(emtIcon);
+                    mMap.addMarker(emtMarkerOptions);
+                    //addMarker(emtLocation, "EMT", DEFAULT_ZOOM);
+                }
+            }
+        });
+
+        listenForLocationChanges(emtUserID);
+
+
+    }
+
+    public void listenForLocationChanges(String emtUserID) {
+
+        final FirebaseFirestore mDb = FirebaseFirestore.getInstance();
+        DocumentReference emtLocRef = mDb.collection("EMTs_Location").document(emtUserID);
+
+        emtLocRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if (documentSnapshot != null && documentSnapshot.exists()) {
+                    Log.d(TAG, "listenForLocationChanges: detecting change to EMT's location, clearing map");
+                    mMap.clear();
+                    Log.d(TAG, "listenForLocationChanges: changing marker for emt");
+                    EmtLocation emtAssigned = documentSnapshot.toObject(EmtLocation.class);
+                    GeoPoint emtLocation = emtAssigned.getGeo_point();
+                    BitmapDescriptor emtIcon = BitmapDescriptorFactory.fromResource(R.drawable.outline_directions_car_black_18dp);
+                    LatLng emtLatLng = new LatLng(emtLocation.getLatitude(), emtLocation.getLongitude());
+                    MarkerOptions emtMarkerOptions = new MarkerOptions().position(emtLatLng)
+                            .title("EMT")
+                            .icon(emtIcon);
+                    mMap.addMarker(emtMarkerOptions);
+                    //addMarker(emtLocation, "EMT", DEFAULT_ZOOM);
+
+                    CollectionReference vicRef = mDb.collection("Vics_Location");
+                    Query vicQuery = vicRef.whereEqualTo("victimUser.user_id", FirebaseAuth.getInstance()
+                            .getCurrentUser().getUid());
+
+                    vicQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    if (document.exists()) {
+                                        Log.d(TAG, "onMapReady: Successfully got  victims location" );
+                                        VicLocation user = document.toObject(VicLocation.class);
+                                        GeoPoint userLoc = user.getGeo_point();
+                                        String firstName = user.getVictimUser().getFirstName();
+                                        addMarker(userLoc, firstName, DEFAULT_ZOOM);
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
 
     }
 

@@ -7,6 +7,7 @@ public class HelpVics {
     String message;
     boolean emtOnTheWay;
     boolean emtHasArrived;
+    String emtAssigned;
 
     public HelpVics() {
         this.emtHasArrived = false;
@@ -21,6 +22,10 @@ public class HelpVics {
         this.emtOnTheWay = emtOnTheWay;
         this.emtHasArrived = emtHasArrived;
     }
+
+    public String getEmtAssigned() { return emtAssigned; }
+
+    public void setEmtAssigned(String emtAssigned) { this.emtAssigned = emtAssigned; }
 
     public boolean isButtonPressed() {
         return buttonPressed;

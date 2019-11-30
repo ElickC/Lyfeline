@@ -88,7 +88,7 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_emt_map, container, false);
         mMapView = view.findViewById(R.id.mapView);
-        view.findViewById(R.id.btn_reset_map).setOnClickListener(this);
+        //view.findViewById(R.id.btn_reset_map).setOnClickListener(this);
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);

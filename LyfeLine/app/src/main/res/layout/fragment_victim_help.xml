@@ -27,7 +27,7 @@
         android:layout_height="50dp"
         android:layout_marginStart="24dp"
         android:layout_marginLeft="24dp"
-        android:layout_marginTop="224dp"
+        android:layout_marginTop="204dp"
         android:layout_marginEnd="29dp"
         android:layout_marginRight="29dp"
         android:src="@drawable/ic_pin_drop_black_48dp"
@@ -93,7 +93,7 @@
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
         android:fontFamily="monospace"
-        android:text="Here you can see your status. We will notify you when EMT are on their way. You will be given an estimated time of arrival and be able to track their location."
+        android:text="Here you can see your status. We will notify you when EMT are on their way. You will be able to track their location."
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView10" />
