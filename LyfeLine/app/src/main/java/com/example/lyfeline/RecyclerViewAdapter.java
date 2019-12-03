@@ -59,7 +59,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 victimsList.get(position).setEmtOnTheWay(true);
                 victimsList.get(position).setEmtHasArrived(false);
                 victimsList.get(position).setEmtAssigned(FirebaseAuth.getInstance().getUid());
-                holder.status.setText("On the way");
+                holder.status.setText("Assigned, On the way");
 
                 vicRef.set(victimsList.get(position)).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override

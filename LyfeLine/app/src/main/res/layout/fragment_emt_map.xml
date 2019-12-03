@@ -16,24 +16,23 @@
         android:background="@color/white">
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/vic_list_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="50"
-            android:id="@+id/vic_list_recycler_view">
+            android:layout_weight="27">
 
         </androidx.recyclerview.widget.RecyclerView>
 
         <RelativeLayout
+            android:id="@+id/map_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="50"
-            android:id="@+id/map_container">
+            android:layout_weight="73">
 
-            <com.google.android.gms.maps.MapView
-                xmlns:android="http://schemas.android.com/apk/res/android"
+            <com.google.android.gms.maps.MapView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/mapView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/mapView" />
+                android:layout_height="match_parent" />
 
             <ImageButton
                 android:id="@+id/btn_reset_map"

@@ -7,8 +7,10 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
@@ -18,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.example.lyfeline.models.PolylineData;
 import com.example.lyfeline.util.ViewWeightAnimationWrapper;
@@ -37,7 +40,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -48,10 +53,13 @@ import com.google.maps.PendingResult;
 import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
+import com.google.rpc.Help;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 import static com.example.lyfeline.util.Constants.MAPVIEW_BUNDLE_KEY;
@@ -79,6 +87,7 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
     private LatLngBounds mMapBoundary;
     private ArrayList<EmtUser> mEmtUserList = new ArrayList<>();
     private ArrayList<PolylineData> mPolylinesData = new ArrayList<>();
+    private HashMap <String, HelpVics> victimMarkers = new HashMap <String, HelpVics>();
     private Marker mSelectedMarker = null;
     private String vicName = null;
     private int mMapLayoutState = 0;
@@ -88,6 +97,8 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
     private RecyclerView mUserListRecyclerView;
     private RelativeLayout mMapContainer;
 
+    private RecyclerViewAdapter recyclerViewAdapter;
+    private ArrayList<HelpVics> victimsList = new ArrayList<>();
     public EmtMapFragment() {
         // Required empty public constructor
     }
@@ -121,6 +132,10 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
                     .apiKey(getString(R.string.google_maps_API_key)).build();
         }
 
+        //queryHelpVics();
+
+        initRecyclerView();
+        listenForRecyclerChanges();
 
         return view;
     }
@@ -166,26 +181,16 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
         mMap.getUiSettings().setMapToolbarEnabled(true);
         mMap.setOnInfoWindowClickListener(this);
 
+        fillMapWithVics();
 
-        CollectionReference vicHelpRef = mDb.collection("HelpVics");
-
-        Query vicQuery = vicHelpRef;
-
-        vicQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        if (document.exists()) {
-                            Log.d(TAG, "onMapReady: Successfully got victims location");
-                            HelpVics helpVic = document.toObject(HelpVics.class);
-                            VicLocation vicLocation = helpVic.getVicLocation();
-                            GeoPoint userLoc = vicLocation.getGeo_point();
-                            String firstName = vicLocation.getVictimUser().getFirstName();
-                            addMarker(userLoc, firstName, DEFAULT_ZOOM);
-                        }
-                    }
-                }
+            public boolean onMarkerClick(Marker marker) {
+                HelpVics vicData = (HelpVics) marker.getTag();
+                victimsList.clear();
+                victimsList.add(vicData);
+                recyclerViewAdapter.notifyDataSetChanged();
+                return false;
             }
         });
 
@@ -196,6 +201,41 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void fillMapWithVics() {
+        CollectionReference vicHelpRef = mDb.collection("HelpVics");
+
+        Query vicQuery = vicHelpRef;
+        mMap.clear();
+
+        vicQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        if (document.exists()) {
+                            Log.d(TAG, "onMapReady: Successfully got victims location");
+                            HelpVics helpVic = document.toObject(HelpVics.class);
+                            if(!helpVic.isEmtHasArrived()) {
+                                VicLocation vicLocation = helpVic.getVicLocation();
+                                GeoPoint userLoc = vicLocation.getGeo_point();
+                                String firstName = vicLocation.getVictimUser().getFirstName();
+                                LatLng vicLatLng = new LatLng(userLoc.getLatitude(), userLoc.getLongitude());
+
+                                MarkerOptions vicMarkerOptions = new MarkerOptions().position(vicLatLng)
+                                        .title(firstName);
+                                Marker vicMarker = mMap.addMarker(vicMarkerOptions);
+                                vicMarker.setTag(helpVic);
+
+                                //addMarker(userLoc, firstName, DEFAULT_ZOOM);
+
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     public void addMarker(GeoPoint loc, String name, float zoom) {
@@ -472,14 +512,14 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
         ViewWeightAnimationWrapper mapAnimationWrapper = new ViewWeightAnimationWrapper(mMapContainer);
         ObjectAnimator mapAnimation = ObjectAnimator.ofFloat(mapAnimationWrapper,
                 "weight",
-                50,
+                73,
                 100);
         mapAnimation.setDuration(800);
 
         ViewWeightAnimationWrapper recyclerAnimationWrapper = new ViewWeightAnimationWrapper(mUserListRecyclerView);
         ObjectAnimator recyclerAnimation = ObjectAnimator.ofFloat(recyclerAnimationWrapper,
                 "weight",
-                50,
+                27,
                 0);
         recyclerAnimation.setDuration(800);
 
@@ -493,17 +533,36 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
         ObjectAnimator mapAnimation = ObjectAnimator.ofFloat(mapAnimationWrapper,
                 "weight",
                 100,
-                50);
+                73);
         mapAnimation.setDuration(800);
 
         ViewWeightAnimationWrapper recyclerAnimationWrapper = new ViewWeightAnimationWrapper(mUserListRecyclerView);
         ObjectAnimator recyclerAnimation = ObjectAnimator.ofFloat(recyclerAnimationWrapper,
                 "weight",
                 0,
-                50);
+                27);
         recyclerAnimation.setDuration(800);
 
         recyclerAnimation.start();
         mapAnimation.start();
+    }
+
+
+    public void listenForRecyclerChanges() {
+        final FirebaseFirestore mDb = FirebaseFirestore.getInstance();
+        CollectionReference helpVicsRef = mDb.collection("HelpVics");
+        helpVicsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                fillMapWithVics();
+            }
+        });
+    }
+
+    public void initRecyclerView() {
+        Log.d(TAG, "initRecyclerView: setting up recyclerview");
+        recyclerViewAdapter = new RecyclerViewAdapter(victimsList);
+        mUserListRecyclerView.setAdapter(recyclerViewAdapter);
+        mUserListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 }
