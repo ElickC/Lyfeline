@@ -23,8 +23,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private static final String TAG = "RecyclerViewAdapter";
 
     private ArrayList<HelpVics> victimsList = new ArrayList<>();
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-
 
 
     public RecyclerViewAdapter(ArrayList<HelpVics> victims) {
@@ -82,6 +80,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()) {
                             Log.d(TAG, "onBindViewHolder: successfully set Boolean value");
+                            vicRef.delete();
+                            Log.d(TAG, "Victim : " + vicRef + " deleted");
                         }
                     }
                 });

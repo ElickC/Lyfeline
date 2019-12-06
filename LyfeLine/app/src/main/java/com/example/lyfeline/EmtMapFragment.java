@@ -207,7 +207,7 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
         CollectionReference vicHelpRef = mDb.collection("HelpVics");
 
         Query vicQuery = vicHelpRef;
-        mMap.clear();
+        resetMap();
 
         vicQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -447,6 +447,11 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
                 break;
             }
 
+            case R.id.btn_reset_map:{
+                fillMapWithVics();
+                break;
+            }
+
         }
     }
 
@@ -478,10 +483,7 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
             alert.show();
             Log.d(TAG, "onInfoClick: marker.getTitle: " + marker.getTitle());
             Log.d(TAG, "onInfoClick Inside: vicName: " + vicName);
-
-
-
-
+            
     }
 
     public void zoomRoute(List<LatLng> lstLatLngRoute) {
@@ -545,6 +547,17 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
 
         recyclerAnimation.start();
         mapAnimation.start();
+    }
+
+    private void resetMap(){
+        if(mMap != null) {
+            mMap.clear();
+
+            if(mPolylinesData.size() > 0){
+                mPolylinesData.clear();
+                mPolylinesData = new ArrayList<>();
+            }
+        }
     }
 
 
