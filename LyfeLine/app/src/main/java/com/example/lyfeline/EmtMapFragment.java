@@ -127,6 +127,7 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
 
         mMapView.getMapAsync(this);
 
+        // Builder used to calculate directions
         if(mGeoApiContext == null){
             mGeoApiContext = new GeoApiContext.Builder()
                     .apiKey(getString(R.string.google_maps_API_key)).build();
@@ -272,22 +273,26 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
 
     }
 
-
+    // marker passed is the destination
     private void calculateDirections(Marker marker){
 
         Log.d(TAG, "calculateDirections: calculating directions.");
 
+        // updates mEmtLocation
         getEmtLocation();
 
         com.google.maps.model.LatLng destination = new com.google.maps.model.LatLng(
                 marker.getPosition().latitude,
                 marker.getPosition().longitude
         );
+
         DirectionsApiRequest directions = new DirectionsApiRequest(mGeoApiContext);
 
         Log.d(TAG, "calculateDirections: mEmTLocation ==> " + mEmtLocation);
 
-                directions.alternatives(true);
+        // Show all possible routes
+        directions.alternatives(true);
+        // Set origin
         directions.origin(
                 new com.google.maps.model.LatLng(
                         mEmtLocation.getGeo_point().getLatitude(),
@@ -295,6 +300,8 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
                 )
         );
         Log.d(TAG, "calculateDirections: destination: " + destination.toString());
+
+        // Callback triggered when request is completed
         directions.destination(destination).setCallback(new PendingResult.Callback<DirectionsResult>() {
             @Override
             public void onResult(DirectionsResult result) {
@@ -316,6 +323,8 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
 
     // Adding polylines to the map for directions
     private void addPolylinesToMap(final DirectionsResult result){
+
+        // Posting to the main thread because in order to add anything to the map, it has to be on main thread
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -336,20 +345,25 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
                 // get the result of each route leg, and store the decoded path into an arraylist
                 for(DirectionsRoute route: result.routes){
                     Log.d(TAG, "run: leg: " + route.legs[0].toString());
+
+                    // Decoding each checkpoint into latitude and longitude coords
                     List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
 
+                    // Add coords to a list
                     List<LatLng> newDecodedPath = new ArrayList<>();
 
                     // This loops through all the LatLng coordinates of ONE polyline.
                     for(com.google.maps.model.LatLng latLng: decodedPath){
 
-//                        Log.d(TAG, "run: latlng: " + latLng.toString());
+//                      Log.d(TAG, "run: latlng: " + latLng.toString());
 
                         newDecodedPath.add(new LatLng(
                                 latLng.lat,
                                 latLng.lng
                         ));
                     }
+
+                    // Create new polyline
                     Polyline polyline = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
                     polyline.setColor(ContextCompat.getColor(getActivity(), R.color.darkGrey));
                     polyline.setClickable(true);
