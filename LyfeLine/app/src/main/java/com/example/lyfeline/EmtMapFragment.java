@@ -132,9 +132,7 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
                     .apiKey(getString(R.string.google_maps_API_key)).build();
         }
 
-        //queryHelpVics();
-
-        initRecyclerView();
+        queryHelpVics();
         listenForRecyclerChanges();
 
         return view;
@@ -570,6 +568,34 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
                 fillMapWithVics();
             }
         });
+    }
+
+    public void queryHelpVics() {
+
+        CollectionReference vicHelpRef = mDb.collection("HelpVics");
+
+        Query vicQuery = vicHelpRef;
+
+        vicQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    victimsList.clear();
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        if (document.exists()) {
+                            Log.d(TAG, "queryHelpVics: adding victim to list");
+                            HelpVics helpVic = document.toObject(HelpVics.class);
+                            if(!helpVic.isEmtHasArrived()) {
+                                victimsList.add(helpVic);
+                            }
+                        }
+                    }
+                    initRecyclerView();
+                    recyclerViewAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
     }
 
     public void initRecyclerView() {
