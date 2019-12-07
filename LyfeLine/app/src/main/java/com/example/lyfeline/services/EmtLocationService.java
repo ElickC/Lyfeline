@@ -47,7 +47,8 @@ public class EmtLocationService extends Service {
 
     @Nullable
     @Override
-    public IBinder onBind(Intent intent) {  /* required method */
+    /* required method  for service */
+    public IBinder onBind(Intent intent) {
         return null;
     }
 
