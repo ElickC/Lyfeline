@@ -20,7 +20,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.example.lyfeline.models.PolylineData;
 import com.example.lyfeline.util.ViewWeightAnimationWrapper;
@@ -53,21 +52,16 @@ import com.google.maps.PendingResult;
 import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
-import com.google.rpc.Help;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 
 import static com.example.lyfeline.util.Constants.MAPVIEW_BUNDLE_KEY;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
                                                         View.OnClickListener,
                                                         GoogleMap.OnInfoWindowClickListener,
@@ -84,10 +78,7 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
     private static final float DEFAULT_ZOOM = 15f;
     private GeoApiContext mGeoApiContext = null;
     private EmtLocation mEmtLocation =  null;
-    private LatLngBounds mMapBoundary;
-    private ArrayList<EmtUser> mEmtUserList = new ArrayList<>();
     private ArrayList<PolylineData> mPolylinesData = new ArrayList<>();
-    private HashMap <String, HelpVics> victimMarkers = new HashMap <String, HelpVics>();
     private Marker mSelectedMarker = null;
     private String vicName = null;
     private int mMapLayoutState = 0;
@@ -195,7 +186,7 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
 
         // Allow background service to update location
         try {
-            Thread.sleep(500);
+            Thread.sleep(1000);
             getEmtLocation();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -220,6 +211,7 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
                                 VicLocation vicLocation = helpVic.getVicLocation();
                                 GeoPoint userLoc = vicLocation.getGeo_point();
                                 String firstName = vicLocation.getVictimUser().getFirstName();
+                                Log.d(TAG, "fillMapWithVics: adding : " + firstName + "to the map");
                                 LatLng vicLatLng = new LatLng(userLoc.getLatitude(), userLoc.getLongitude());
 
                                 MarkerOptions vicMarkerOptions = new MarkerOptions().position(vicLatLng)
@@ -495,7 +487,7 @@ public class EmtMapFragment extends Fragment implements OnMapReadyCallback,
             alert.show();
             Log.d(TAG, "onInfoClick: marker.getTitle: " + marker.getTitle());
             Log.d(TAG, "onInfoClick Inside: vicName: " + vicName);
-            
+
     }
 
     public void zoomRoute(List<LatLng> lstLatLngRoute) {
