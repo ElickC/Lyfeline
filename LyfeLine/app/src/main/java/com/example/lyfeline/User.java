@@ -9,7 +9,6 @@ public class User {
     String lastName;
     String email;
     String user_id;
-    String avatar;
     Boolean isVictim;
     Boolean isEmt;
 }

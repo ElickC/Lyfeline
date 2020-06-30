@@ -32,9 +32,9 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version"/>
 
-        <activity android:name=".VictimGui"></activity>
+        <activity android:name=".VictimAcitivy">
         <activity android:name=".EmtActivity" />
-        <activity android:name=".Main2Activity" />
+        <activity android:name=".Main2Activity"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

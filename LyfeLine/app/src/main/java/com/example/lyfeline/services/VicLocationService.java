@@ -47,6 +47,7 @@ public class VicLocationService extends Service {
 
     @Nullable
     @Override
+    /* required method  for service */
     public IBinder onBind(Intent intent) {  /* required method */
         return null;
     }

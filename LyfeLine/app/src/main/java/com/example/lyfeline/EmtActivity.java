@@ -21,7 +21,6 @@ public class EmtActivity extends AppCompatActivity {
 
     private static final String TAG = "EmtActivity";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,8 +30,6 @@ public class EmtActivity extends AppCompatActivity {
         toolbar.setTitle(getResources().getString(R.string.app_name));
 
         TabLayout tabLayout = findViewById(R.id.tabLayout);
-        //TabItem tabHome = findViewById(R.id.tabHome);
-        //TabItem tabMap = findViewById(R.id.tabMap);
 
         ViewPager viewPager = findViewById(R.id.viewPager);
 
@@ -40,15 +37,14 @@ public class EmtActivity extends AppCompatActivity {
         viewPager.setAdapter(pageAdapter);
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        // Start background location updating service
         startLocationService();
     }
 
     private void startLocationService(){
 
-
         if(!isLocationServiceRunning()){
             Intent serviceIntent = new Intent(this, EmtLocationService.class);
-//        this.startService(serviceIntent);
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
 

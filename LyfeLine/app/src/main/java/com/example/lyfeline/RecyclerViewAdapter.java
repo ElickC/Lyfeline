@@ -80,14 +80,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()) {
                             Log.d(TAG, "onBindViewHolder: successfully set Boolean value");
-                            vicRef.delete();
-                            Log.d(TAG, "Victim : " + vicRef + " deleted");
+                            holder.status.setText("EMT has Arrived");
                         }
                     }
                 });
             }
         });
-
     }
 
     @Override
@@ -95,8 +93,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return victimsList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder
-    {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         TextView name, message, status;
         Button btnOnTheWay, btnArrived;
 
@@ -108,7 +105,5 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             btnOnTheWay = itemView.findViewById(R.id.buttonOnTheWay);
             btnArrived = itemView.findViewById(R.id.buttonArrived);
         }
-
-
     }
 }

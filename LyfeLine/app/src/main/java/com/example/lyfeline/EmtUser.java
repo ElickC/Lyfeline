@@ -1,10 +1,5 @@
 package com.example.lyfeline;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
 public class EmtUser extends User {
 
     public EmtUser() {
@@ -15,8 +10,6 @@ public class EmtUser extends User {
         this.lastName = lastName;
         this.email = email;
         this.user_id = user_id;
-        this.avatar = avatar;
-
     }
 
     public String getFirstName() {
@@ -43,14 +36,6 @@ public class EmtUser extends User {
         this.email = email;
     }
 
-    public String getAvatar(){
-        return avatar;
-    }
-
-    public void setAvatar(String avatar){
-        this.avatar = avatar;
-    }
-
     public String getUser_id(){
         return user_id;
     }
@@ -63,7 +48,6 @@ public class EmtUser extends User {
         return "User{" +
                 "email='" + email + '\'' +
                 ", user_id='" + user_id + '\'' +
-                ", avatar='" + avatar + '\'' +
                 '}';
     }
 
